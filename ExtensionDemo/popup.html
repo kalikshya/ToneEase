@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>ToneEase</title>
+    <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>ToneEase</h1>
+        <p class="subtitle">Smart Tone Assistant</p>
+
+        <!-- MASTER TOGGLE -->
+        <div class="section">
+            <span>ToneEase Status</span>
+            <label class="switch">
+                <input type="checkbox" id="masterToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- AUTOMATIC MODE -->
+        <div class="section">
+            <span>Automatic Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="autoMode" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- MANUAL MODE -->
+        <div class="section">
+            <span>Manual Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="manualMode">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- PREFERRED TONE (Hidden by default) -->
+        <div class="section hidden" id="toneSelectBox">
+            <label>Preferred Tone</label>
+            <select id="toneSelect">
+                <option>Polite</option>
+                <option>Kind</option>
+                <option>Friendly</option>
+                <option>Professional</option>
+                <option>Confident</option>
+            </select>
+        </div>
+
+        <!-- SENSITIVITY -->
+<div class="section sensitivity-container">
+    <span>Sensitivity</span>
+</div>
+
+<input 
+    type="range" 
+    min="1" 
+    max="3" 
+    value="2" 
+    class="sensitivity-slider"
+>
+
+<div class="sensitivity-labels">
+    <span>Low</span>
+    <span>Medium</span>
+    <span>High</span>
+</div>
+
+</div>
+
+
+<!-- SUGGESTION BOX -->
+<div class="suggestion-box" id="suggestionBox">
+
+    <div class="suggestion-title">Suggestion</div>
+
+    <div class="suggestion-text">
+        <strong>Original:</strong>
+        <p>Why did you do that?</p>
+    </div>
+
+    <div class="suggestion-text">
+        <strong>Rewritten:</strong>
+        <p>Could you explain what happened?</p>
+    </div>
+
+    <div class="suggestion-actions">
+        <button class="apply-btn">Apply</button>
+        <button class="reject-btn">Reject</button>
+    </div>
+
+</div>
+
+
+
+        <!-- SETTINGS -->
+        <div class="footer">
+            <span id="settingsBtn">Settings</span>
+        </div>
+
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

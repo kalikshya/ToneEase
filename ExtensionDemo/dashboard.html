@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ToneEase Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>ToneEase</h2>
+        <ul>
+            <li class="nav-item active" data-target="overview">Overview</li>
+            <li class="nav-item" data-target="modes">Modes</li>
+            <li class="nav-item" data-target="sensitivity">Sensitivity</li>
+            <li class="nav-item" data-target="preferences">User Preferences</li>
+            <li class="nav-item" data-target="history">History</li>
+            <li class="nav-item" data-target="about">About</li>
+        </ul>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- OVERVIEW -->
+        <div class="section-content active" id="overview">
+            <h3>Overview</h3>
+            <p>This section summarizes the current configuration of ToneEase.</p>
+
+            <div class="card">Automatic Mode: Enabled</div>
+            <div class="card">Manual Mode: Enabled</div>
+            <div class="card">Sensitivity Level: Medium</div>
+        </div>
+
+        <!-- MODES -->
+        <div class="section-content" id="modes">
+            <h3>Modes</h3>
+            <p><strong>Automatic Mode:</strong> Detects tone issues automatically.</p>
+            <p><strong>Manual Mode:</strong> Allows users to choose preferred tone.</p>
+        </div>
+
+        <!-- SENSITIVITY -->
+        <div class="section-content" id="sensitivity">
+            <h3>Sensitivity</h3>
+            <p>Controls how strictly ToneEase detects emotional language.</p>
+            <p>Current Level: Medium</p>
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="section-content" id="preferences">
+            <h3>User Preferences</h3>
+            <p>Preferred Tone: Polite</p>
+            <p>Auto Mode: Enabled</p>
+            <p>Manual Mode: Enabled</p>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="section-content" id="history">
+            <h3>History</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Mode</th>
+                </tr>
+                <tr>
+                    <td>01-Dec-2025</td>
+                    <td>Suggestion Accepted</td>
+                    <td>Automatic</td>
+                </tr>
+                <tr>
+                    <td>02-Dec-2025</td>
+                    <td>Rewrite Applied</td>
+                    <td>Manual</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ABOUT -->
+        <div class="section-content" id="about">
+            <h3>About</h3>
+            <p>
+                ToneEase is a smart browser extension designed to help users communicate
+                more politely and clearly using tone-aware suggestions.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
