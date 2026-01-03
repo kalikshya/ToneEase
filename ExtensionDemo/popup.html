@@ -43,59 +43,71 @@
         <div class="section hidden" id="toneSelectBox">
             <label>Preferred Tone</label>
             <select id="toneSelect">
-                <option>Polite</option>
-                <option>Kind</option>
-                <option>Friendly</option>
-                <option>Professional</option>
-                <option>Confident</option>
+                <option value="polite">Polite</option>
+                <option value="kind">Kind</option>
+                <option value="friendly">Friendly</option>
+                <option value="professional">Professional</option>
+                <option value="confident">Confident</option>
             </select>
         </div>
 
         <!-- SENSITIVITY -->
-<div class="section sensitivity-container">
-    <span>Sensitivity</span>
-</div>
+        <div class="section sensitivity-container">
+            <span>Sensitivity</span>
+        </div>
 
-<input 
-    type="range" 
-    min="1" 
-    max="3" 
-    value="2" 
-    class="sensitivity-slider"
->
+        <input 
+            type="range" 
+            min="1" 
+            max="100" 
+            value="50" 
+            id="sensitivity"
+            class="sensitivity-slider"
+        >
 
-<div class="sensitivity-labels">
-    <span>Low</span>
-    <span>Medium</span>
-    <span>High</span>
-</div>
+        <div class="sensitivity-labels">
+            <span>Low</span>
+            <span>Medium</span>
+            <span>High</span>
+        </div>
 
-</div>
+        <!-- Test Input Section -->
+        <div id="testSection" style="margin: 15px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Test Message:</label>
+            <textarea 
+                id="testInput" 
+                placeholder="Type a message to test tone detection..."
+                style="width: 100%; height: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;"
+            ></textarea>
+            <button 
+                id="analyzeBtn" 
+                style="margin-top: 8px; padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;"
+            >
+                Analyze Tone
+            </button>
+        </div>
 
+        <!-- SUGGESTION BOX -->
+        <div class="suggestion-box hidden" id="suggestionBox">
 
-<!-- SUGGESTION BOX -->
-<div class="suggestion-box" id="suggestionBox">
+            <div class="suggestion-title">Suggestion</div>
 
-    <div class="suggestion-title">Suggestion</div>
+            <div class="suggestion-text">
+                <strong>Original:</strong>
+                <p id="originalText">Why did you do that?</p>
+            </div>
 
-    <div class="suggestion-text">
-        <strong>Original:</strong>
-        <p>Why did you do that?</p>
-    </div>
+            <div class="suggestion-text">
+                <strong>Rewritten:</strong>
+                <p id="rewrittenText">Could you explain what happened?</p>
+            </div>
 
-    <div class="suggestion-text">
-        <strong>Rewritten:</strong>
-        <p>Could you explain what happened?</p>
-    </div>
+            <div class="suggestion-actions">
+                <button class="apply-btn">Apply</button>
+                <button class="reject-btn">Reject</button>
+            </div>
 
-    <div class="suggestion-actions">
-        <button class="apply-btn">Apply</button>
-        <button class="reject-btn">Reject</button>
-    </div>
-
-</div>
-
-
+        </div>
 
         <!-- SETTINGS -->
         <div class="footer">

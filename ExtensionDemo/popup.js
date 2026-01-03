@@ -1,28 +1,245 @@
 console.log("ToneEase Popup Loaded");
 
+const API_URL = "http://127.0.0.1:8000";
+
+// DOM Elements - declared at top
+const autoToggle = document.getElementById("autoMode");
 const manualToggle = document.getElementById("manualMode");
 const toneBox = document.getElementById("toneSelectBox");
+const toneSelect = document.getElementById("toneSelect");
+const suggestionBox = document.getElementById("suggestionBox");
+const applyBtn = document.querySelector(".apply-btn");
+const rejectBtn = document.querySelector(".reject-btn");
 
-manualToggle.addEventListener("change", () => {
-    if (manualToggle.checked) {
-        toneBox.classList.remove("hidden");
-    } else {
-        toneBox.classList.add("hidden");
-    }
-});
+// These will be set after DOM loads
+let testInput = null;
+let sensitivitySlider = null;
+let originalText = null;
+let rewrittenText = null;
 
-
-document.getElementById("settingsBtn").addEventListener("click", () => {
-    chrome.tabs.create({
-        url: "dashboard.html"
+// Toggle manual tone selector
+if (manualToggle) {
+    manualToggle.addEventListener("change", () => {
+        if (manualToggle.checked) {
+            toneBox.classList.remove("hidden");
+        } else {
+            toneBox.classList.add("hidden");
+        }
     });
+}
+
+// Settings button
+const settingsBtn = document.getElementById("settingsBtn");
+if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+        chrome.tabs.create({
+            url: "dashboard.html"
+        });
+    });
+}
+
+// Get sensitivity level from slider
+function getSensitivityLevel() {
+    if (!sensitivitySlider) return "medium";
+    const value = parseInt(sensitivitySlider.value);
+    if (value <= 33) return "low";
+    if (value <= 66) return "medium";
+    return "high";
+}
+
+// Analyze text function
+async function analyzeText(text) {
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    
+    try {
+        // Disable button temporarily
+        if (analyzeBtn) {
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = "Analyzing...";
+        }
+       
+
+        console.log("Sending request to backend...");
+        
+        const mode = manualToggle && manualToggle.checked ? "manual" : "auto";
+        const tone = toneSelect ? toneSelect.value : "polite";
+        const sensitivity = getSensitivityLevel();
+
+        const response = await fetch(`${API_URL}/analyze`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text: text,
+                mode: mode,
+                tone: tone,
+                sensitivity: sensitivity
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("API request failed");
+        }
+
+        const result = await response.json();
+        console.log("Backend response:", result);
+        
+        // Show suggestion if available
+        if (result.suggestion) {
+            showSuggestion(result.original, result.suggestion, result.emotion, result.confidence);
+        } else {
+            hideSuggestion();
+            alert("No harsh tone detected! Message looks good.");
+        }
+
+        return result;
+
+    } catch (error) {
+        console.error("Error analyzing text:", error);
+        alert("Error: Cannot connect to backend. Make sure backend.py is running!");
+    } finally {
+        // Re-enable button
+        if (analyzeBtn) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = "Analyze Tone";
+        }
+    }
+}
+
+// Show suggestion box
+function showSuggestion(original, suggestion, emotion, confidence) {
+    if (originalText) originalText.textContent = original;
+    if (rewrittenText) rewrittenText.textContent = suggestion;
+    if (suggestionBox) suggestionBox.classList.remove("hidden");
+    
+    // Store current suggestion for apply/reject
+    window.currentSuggestion = { original, suggestion, emotion, confidence };
+    
+    console.log("Suggestion shown:", { original, suggestion, emotion, confidence });
+}
+
+// Hide suggestion box
+function hideSuggestion() {
+    if (suggestionBox) suggestionBox.classList.add("hidden");
+}
+
+// Save to localStorage history
+function saveToHistory(action, mode) {
+    const history = JSON.parse(localStorage.getItem("toneease_history") || "[]");
+    
+    const entry = {
+        date: new Date().toLocaleDateString(),
+        action: action,
+        mode: mode,
+        original: window.currentSuggestion?.original || "",
+        suggestion: window.currentSuggestion?.suggestion || "",
+        timestamp: new Date().toISOString()
+    };
+    
+    history.unshift(entry); // Add to beginning
+    
+    // Keep only last 50 entries
+    if (history.length > 50) {
+        history.pop();
+    }
+    
+    localStorage.setItem("toneease_history", JSON.stringify(history));
+    console.log("Saved to history:", entry);
+}
+
+// Apply button - accept suggestion
+if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+        console.log("Apply button clicked");
+        if (window.currentSuggestion) {
+            // Replace text in input
+            if (testInput) {
+                testInput.value = window.currentSuggestion.suggestion;
+            }
+            
+            // Save to history
+            saveToHistory("Suggestion Accepted", "Automatic");
+            
+            alert("Suggestion applied!");
+            hideSuggestion();
+        }
+    });
+}
+
+// Reject button
+if (rejectBtn) {
+    rejectBtn.addEventListener("click", () => {
+        console.log("Reject button clicked");
+        if (window.currentSuggestion) {
+            // Save to history
+            saveToHistory("Suggestion Rejected", "Automatic");
+            
+            alert("Suggestion rejected");
+            hideSuggestion();
+        }
+    });
+}
+
+// Initialize after DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM Content Loaded - Initializing...");
+    
+    // Get all elements that need to be accessed after DOM loads
+    testInput = document.getElementById("testInput");
+    sensitivitySlider = document.getElementById("sensitivity");
+    originalText = document.getElementById("originalText");
+    rewrittenText = document.getElementById("rewrittenText");
+    
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    
+    console.log("Elements found:", {
+        testInput: !!testInput,
+        analyzeBtn: !!analyzeBtn,
+        sensitivitySlider: !!sensitivitySlider,
+        originalText: !!originalText,
+        rewrittenText: !!rewrittenText
+    });
+    
+    // Analyze button click
+    if (analyzeBtn && testInput) {
+        analyzeBtn.addEventListener("click", () => {
+            console.log("Analyze button clicked!");
+            const text = testInput.value.trim();
+            if (text.length > 0) {
+                console.log("Analyzing:", text);
+                analyzeText(text);
+            } else {
+                alert("Please enter some text to analyze");
+            }
+        });
+        
+        // Auto-analyze on typing (for auto mode)
+        let typingTimer;
+        testInput.addEventListener("input", () => {
+            clearTimeout(typingTimer);
+            if (autoToggle && autoToggle.checked) {
+                typingTimer = setTimeout(() => {
+                    const text = testInput.value.trim();
+                    if (text.length > 3) {
+                        console.log("Auto-analyzing:", text);
+                        analyzeText(text);
+                    }
+                }, 1500); // Wait 1.5 seconds after user stops typing
+            }
+        });
+    } else {
+        console.error("Analyze button or test input not found!");
+    }
+    
+    // Sensitivity slider update
+    if (sensitivitySlider) {
+        sensitivitySlider.addEventListener("input", () => {
+            const level = getSensitivityLevel();
+            console.log("Sensitivity changed to:", level);
+        });
+    }
+    
+    console.log("ToneEase functionality loaded successfully!");
 });
 
-// Demo behavior only
-document.querySelector(".apply-btn").addEventListener("click", () => {
-    alert("Suggestion applied (demo)");
-});
-
-document.querySelector(".reject-btn").addEventListener("click", () => {
-    alert("Suggestion rejected (demo)");
-});

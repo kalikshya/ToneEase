@@ -173,3 +173,11 @@ input:checked + .slider::before {
     cursor: pointer;
     font-size: 12px;
 }
+#analyzeBtn {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+#analyzeBtn:hover {
+    background: #1976D2 !important;
+}
