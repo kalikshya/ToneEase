@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ToneEase",
   "version": "1.0",
-  "description": "Smart Tone Assistant",
+  "description": "Smart Tone Assistant for better communication",
   "action": {
     "default_popup": "popup.html"
   },
@@ -16,7 +16,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["login.html", "register.html", "dashboard.html"],
+      "resources": [
+        "login.html", "login.js",
+        "register.html", "register.js",
+        "dashboard.html", "dashboard.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]
