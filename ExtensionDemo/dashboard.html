@@ -29,7 +29,6 @@
         <div class="section-content active" id="overview">
             <h3>Overview</h3>
             <p>This section summarizes the current configuration of ToneEase.</p>
-
             <div class="card">Automatic Mode: Enabled</div>
             <div class="card">Manual Mode: Enabled</div>
             <div class="card">Sensitivity Level: Medium</div>
@@ -58,16 +57,16 @@
         </div>
 
         <!-- HISTORY -->
-        <!-- HISTORY -->
-<div class="section-content" id="history">
-    <h3>History</h3>
-    <div id="historyContainer">
-        <p style="color: #666;">Loading history...</p>
-    </div>
-    <button onclick="clearHistory()" style="margin-top: 15px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        Clear History
-    </button>
-</div>
+        <div class="section-content" id="history">
+            <h3>History</h3>
+            <p id="historyStatus" style="font-size: 12px; color: #666; margin-bottom: 10px;"></p>
+            <div id="historyContainer">
+                <p style="color: #666;">Loading history...</p>
+            </div>
+            <button id="clearHistoryBtn" style="margin-top: 15px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Clear History
+            </button>
+        </div>
 
         <!-- ABOUT -->
         <div class="section-content" id="about">
