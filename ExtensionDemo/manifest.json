@@ -2,15 +2,22 @@
   "manifest_version": 3,
   "name": "ToneEase",
   "version": "1.0",
-  "description": "Smart Tone Assistant for better communication",
+  "description": "Smart Tone Assistant",
   "action": {
     "default_popup": "popup.html"
   },
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "host_permissions": [
     "http://127.0.0.1:8000/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["login.html", "register.html", "dashboard.html"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
