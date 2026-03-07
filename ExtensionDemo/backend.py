@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from transformers import pipeline
-import re
+from groq import Groq
 from datetime import datetime
+import json
+import os
 
 app = FastAPI()
 
-# Enable CORS so browser extension can call the API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,124 +16,108 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load DistilRoBERTa model
-print("Loading DistilRoBERTa model...")
-emotion_classifier = pipeline(
-    "text-classification",
-    model="j-hartmann/emotion-english-distilroberta-base",
-    top_k=None
-)
-print("Model loaded successfully!")
-
-# Rule-based rewriter
-def rewrite_polite(message):
-    message_lower = message.lower().strip()
-    
-    if re.match(r"why (did|didn't|dont|don't) you", message_lower):
-        return re.sub(
-            r"Why (did|didn't|dont|don't) you", 
-            r"Could you please help me understand why you \1", 
-            message, 
-            flags=re.IGNORECASE
-        )
-    
-    if message_lower.startswith("you never"):
-        return re.sub(
-            r"You never", 
-            "I've noticed that sometimes you don't", 
-            message, 
-            flags=re.IGNORECASE
-        )
-    
-    if re.match(r"you're always|you are always", message_lower):
-        return re.sub(
-            r"You're always|You are always", 
-            "I've noticed a pattern where", 
-            message, 
-            flags=re.IGNORECASE
-        )
-    
-    if "unacceptable" in message_lower:
-        return "I'm concerned about this situation and would like to discuss how we can improve it."
-    
-    if re.search(r"are you (serious|kidding|joking)", message_lower):
-        return "I'd like to clarify this situation with you."
-    
-    if re.match(r"i need (this|that|it)", message_lower):
-        return re.sub(
-            r"I need (this|that|it)", 
-            r"I would appreciate if \1 could be", 
-            message, 
-            flags=re.IGNORECASE
-        ) + " completed when you have a moment."
-    
-    if re.match(r"(do|finish|complete|send|give me)", message_lower):
-        return f"Could you please {message_lower}?"
-    
-    if message.strip().endswith("?") and not message_lower.startswith(("could", "would", "can", "may")):
-        return f"Could you please help me with this: {message}"
-    
-    return f"I wanted to mention: {message}"
+# ============================================
+# GROQ API KEY
+# =======================================
+client = Groq(api_key=os.getenv("GROQ_API_KEY", "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"))
 
 class MessageRequest(BaseModel):
     text: str
-    mode: str = "auto"
-    tone: str = "polite"
-    sensitivity: str = "medium"
+    mode: str = "auto"           # "auto" or "manual"
+    tone: str = "polite"         # target tone: polite, kind, calm, respectful
+    sensitivity: str = "medium"  # "low", "medium", "high"
 
 @app.post("/analyze")
 async def analyze_message(request: MessageRequest):
     text = request.text
-    
+
     if not text or len(text.strip()) < 3:
         return {"error": "Text too short"}
-    
-    # Detect tone with DistilRoBERTa
-    results = emotion_classifier(text)[0]
-    results_sorted = sorted(results, key=lambda x: x['score'], reverse=True)
-    
-    top_emotion = results_sorted[0]['label']
-    confidence = results_sorted[0]['score']
-    
-    # Sensitivity thresholds
-    threshold_map = {
-        "low": 0.5,
-        "medium": 0.3,
-        "high": 0.2
+
+    sensitivity_map = {
+        "low":    "Only flag very obviously rude or aggressive messages. Ignore mildly blunt ones.",
+        "medium": "Flag messages that are harsh, blunt, passive-aggressive, or emotionally charged.",
+        "high":   "Flag even slightly negative, cold, or emotionally tense messages."
     }
-    threshold = threshold_map.get(request.sensitivity, 0.4)
-    
-    # Check if harsh tone
-    harsh_emotions = ['anger', 'disgust', 'sadness']
-    is_harsh = top_emotion in harsh_emotions and confidence > threshold
-    
-    # Generate suggestion
-    suggestion = None
-    if request.mode == "manual" or is_harsh:
-        suggestion = rewrite_polite(text)
-    
-    return {
-        "original": text,
-        "emotion": top_emotion,
-        "confidence": round(confidence, 2),
-        "is_harsh": is_harsh,
-        "suggestion": suggestion,
-        "all_emotions": [
-            {"emotion": e['label'], "confidence": round(e['score'], 2)} 
-            for e in results_sorted[:3]
-        ],
-        "timestamp": datetime.now().isoformat()
-    }
+    sensitivity_instruction = sensitivity_map.get(request.sensitivity, sensitivity_map["medium"])
+
+    if request.mode == "manual":
+        rewrite_instruction = f'Since the user selected manual mode, ALWAYS rewrite the message in a {request.tone} tone regardless of whether it is harsh or not. Set needs_rewrite to true.'
+    else:
+        rewrite_instruction = f'Only rewrite if the message is harsh/rude/not normal. Sensitivity rule: {sensitivity_instruction}'
+
+    prompt = f"""You are ToneEase, an AI assistant that helps people communicate better by detecting harsh or rude messages and rewriting them professionally.
+
+Analyze this message and respond ONLY with valid JSON, nothing else:
+
+Message: "{text}"
+
+Instructions:
+1. Decide if this message needs rewriting (needs_rewrite: true or false)
+   - {rewrite_instruction}
+2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. You may naturally include 1-2 relevant emojis in the rewrite ONLY if they genuinely fit.
+3. If needs_rewrite is false: set suggestion to null.
+4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite")
+
+Respond with this exact JSON only:
+{{
+  "needs_rewrite": true,
+  "detected_tone": "string",
+  "suggestion": "rewritten message or null"
+}}"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a JSON-only response bot. Never output anything except valid JSON. No markdown, no backticks, no explanations."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.3,
+            max_tokens=300
+        )
+
+        raw = response.choices[0].message.content.strip()
+
+        # Clean markdown if model adds it
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        raw = raw.strip()
+
+        result = json.loads(raw)
+
+        return {
+            "original": text,
+            "needs_rewrite": result.get("needs_rewrite", False),
+            "detected_tone": result.get("detected_tone", "neutral") if result.get("needs_rewrite") else "neutral",
+            "suggestion": result.get("suggestion", None),
+            "mode": request.mode,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except json.JSONDecodeError:
+        return {"error": "Failed to parse AI response. Please try again."}
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @app.get("/")
 async def root():
-    return {"status": "ToneEase API is running!", "version": "1.0"}
+    return {"status": "ToneEase API is running!", "version": "2.0", "model": "llama-3.3-70b-versatile"}
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "model": "loaded"}
+    return {"status": "healthy", "model": "llama-3.3-70b-versatile"}
+
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
-    
