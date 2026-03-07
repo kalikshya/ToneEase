@@ -117,6 +117,8 @@ async function analyzeText(text) {
         const mode = manualToggle && manualToggle.checked ? "manual" : "auto";
         const tone = toneSelect ? toneSelect.value : "polite";
         const sensitivity = getSensitivityLevel();
+        // Fallback if session not loaded yet
+if (!currentSessionId) currentSessionId = generateSessionId();
 
         const response = await fetch(`${API_URL}/analyze`, {
             method: "POST",

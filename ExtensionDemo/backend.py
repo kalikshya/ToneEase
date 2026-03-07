@@ -7,6 +7,7 @@ import json
 import os
 import uuid
 import pymysql
+from typing import Optional
 
 app = FastAPI()
 
@@ -45,8 +46,8 @@ class MessageRequest(BaseModel):
     mode: str = "auto"
     tone: str = "polite"
     sensitivity: str = "medium"
-    session_id: str = None
-    user_id: int = None
+    session_id: Optional[str] = None
+    user_id: Optional[int] = None
 
 class RegisterRequest(BaseModel):
     username: str
@@ -64,8 +65,8 @@ class LinkSessionRequest(BaseModel):
 class FeedbackRequest(BaseModel):
     history_id: int
     action: str
-    user_id: int = None
-    session_id: str = None
+    user_id: Optional[int] = None
+    session_id: Optional[str] = None
 
 # ============================================
 # HELPER: Create session if not exists
