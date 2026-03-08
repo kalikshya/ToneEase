@@ -235,6 +235,11 @@ async function saveFeedback(historyId, action) {
 // ============================================
 // DOM READY
 // ============================================
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === "LOGIN_SUCCESS") {
+        initUserState();
+    }
+});
 document.addEventListener("DOMContentLoaded", () => {
     testInput = document.getElementById("testInput");
     sensitivitySlider = document.getElementById("sensitivity");
@@ -242,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rewrittenText = document.getElementById("rewrittenText");
 
     const analyzeBtn = document.getElementById("analyzeBtn");
+    
 
     initUserState();
 
