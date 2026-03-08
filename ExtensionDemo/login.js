@@ -47,11 +47,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
                         });
                     }
                     showMessage("Welcome back, " + result.username + "!", "success");
-                    setTimeout((){
-                        chrome.runtime.sendMessage({ type: "LOGIN_SUCCESS" });
-                         window.close();
-
-                    }, 1500);
+                    setTimeout(() => window.close(), 1500);
                 });
             });
         } else {
