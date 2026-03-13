@@ -11,15 +11,71 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <h2>ToneEase</h2>
-        <ul>
-            <li class="nav-item active" data-target="overview">Overview</li>
-            <li class="nav-item" data-target="modes">Modes</li>
-            <li class="nav-item" data-target="sensitivity">Sensitivity</li>
-            <li class="nav-item" data-target="preferences">User Preferences</li>
-            <li class="nav-item" data-target="history">History</li>
-            <li class="nav-item" data-target="about">About</li>
-        </ul>
+        <div class="sidebar-logo">
+            <h2>ToneEase</h2>
+            <p>Smart Tone Assistant</p>
+        </div>
+
+        <div class="nav-item active" data-target="overview">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
+                <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
+                <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
+                <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/>
+            </svg>
+            Overview
+        </div>
+
+        <div class="nav-item" data-target="modes">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M8 4v4l3 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            Modes
+        </div>
+
+        <div class="nav-item" data-target="sensitivity">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <path d="M2 12 6 8l4-3 4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="6" cy="8" r="1.2" fill="currentColor"/>
+                <circle cx="10" cy="5" r="1.2" fill="currentColor"/>
+            </svg>
+            Sensitivity
+        </div>
+
+        <div class="nav-item" data-target="preferences">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            Preferences
+        </div>
+
+        <div class="nav-item" data-target="history">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            History
+        </div>
+
+        <div class="nav-item" data-target="about">
+            <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M8 7v5M8 5v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            About
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="user-chip">
+                <div class="avatar" id="sidebarAvatar">?</div>
+                <div>
+                    <div class="user-name" id="sidebarUsername">Guest</div>
+                    <div class="user-email" id="sidebarEmail">Not signed in</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- CONTENT -->
@@ -27,54 +83,180 @@
 
         <!-- OVERVIEW -->
         <div class="section-content active" id="overview">
-            <h3>Overview</h3>
-            <p>This section summarizes the current configuration of ToneEase.</p>
-            <div class="card">Automatic Mode: Enabled</div>
-            <div class="card">Manual Mode: Enabled</div>
-            <div class="card">Sensitivity Level: Medium</div>
+            <p class="page-title">Overview</p>
+            <p class="page-sub">Your ToneEase activity at a glance</p>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Messages analyzed</div>
+                    <div class="stat-value blue" id="statTotal">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Suggestions accepted</div>
+                    <div class="stat-value green" id="statAccepted">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Acceptance rate</div>
+                    <div class="stat-value amber" id="statRate">—</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h4>Active settings</h4>
+                <div class="row-setting">
+                    <div class="row-label">Automatic mode</div>
+                    <span class="badge badge-green">On</span>
+                </div>
+                <div class="row-setting">
+                    <div class="row-label">Manual mode</div>
+                    <span class="badge badge-gray">Off</span>
+                </div>
+                <div class="row-setting" style="border:none;">
+                    <div class="row-label">Sensitivity</div>
+                    <span class="badge badge-amber">Medium</span>
+                </div>
+            </div>
         </div>
 
         <!-- MODES -->
         <div class="section-content" id="modes">
-            <h3>Modes</h3>
-            <p><strong>Automatic Mode:</strong> Detects tone issues automatically.</p>
-            <p><strong>Manual Mode:</strong> Allows users to choose preferred tone.</p>
+            <p class="page-title">Modes</p>
+            <p class="page-sub">Control how ToneEase analyzes your messages</p>
+            <div class="info-card">
+                <div class="row-setting">
+                    <div>
+                        <div class="row-label">Automatic mode</div>
+                        <div class="row-sub">Detects tone issues as you type</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+                <div class="row-setting" style="border:none;">
+                    <div>
+                        <div class="row-label">Manual mode</div>
+                        <div class="row-sub">You choose the target tone before rewriting</div>
+                    </div>
+                    <div class="toggle off"></div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h4>Preferred tone</h4>
+                <p>Used when manual mode is active</p>
+                <div class="tech-badges" style="margin-top:12px;">
+                    <span class="badge badge-blue">Polite</span>
+                    <span class="badge badge-gray">Kind</span>
+                    <span class="badge badge-gray">Friendly</span>
+                    <span class="badge badge-gray">Professional</span>
+                    <span class="badge badge-gray">Confident</span>
+                </div>
+            </div>
         </div>
 
         <!-- SENSITIVITY -->
         <div class="section-content" id="sensitivity">
-            <h3>Sensitivity</h3>
-            <p>Controls how strictly ToneEase detects emotional language.</p>
-            <p>Current Level: Medium</p>
+            <p class="page-title">Sensitivity</p>
+            <p class="page-sub">How strictly ToneEase flags emotional language</p>
+            <div class="info-card">
+                <div class="slider-row">
+                    <label>Detection sensitivity — <strong>Medium</strong></label>
+                    <div class="slider-track">
+                        <div class="slider-fill"></div>
+                        <div class="slider-thumb"></div>
+                    </div>
+                    <div class="slider-labels">
+                        <span>Low</span>
+                        <span>Medium</span>
+                        <span>High</span>
+                    </div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h4>Low</h4>
+                <p>Only flags very obviously rude or aggressive messages.</p>
+            </div>
+            <div class="info-card" style="border-color:#0077B6;">
+                <h4>Medium &nbsp;<span class="badge badge-blue">Active</span></h4>
+                <p>Flags harsh, blunt, passive-aggressive, or emotionally charged messages.</p>
+            </div>
+            <div class="info-card">
+                <h4>High</h4>
+                <p>Flags even slightly negative, cold, or emotionally tense messages.</p>
+            </div>
         </div>
 
         <!-- PREFERENCES -->
         <div class="section-content" id="preferences">
-            <h3>User Preferences</h3>
-            <p>Preferred Tone: Polite</p>
-            <p>Auto Mode: Enabled</p>
-            <p>Manual Mode: Enabled</p>
+            <p class="page-title">User preferences</p>
+            <p class="page-sub">Manage your account and settings</p>
+            <div class="info-card">
+                <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+                    <div class="avatar" id="prefAvatar" style="width:44px; height:44px; font-size:15px; background:#e3f2fd; color:#0077B6;">?</div>
+                    <div>
+                        <div style="font-size:15px; font-weight:600;" id="prefUsername">Guest</div>
+                        <div style="font-size:12px; color:#999;" id="prefEmail">Not signed in</div>
+                    </div>
+                </div>
+                <div class="row-setting">
+                    <div class="row-label">Auto-analyze while typing</div>
+                    <div class="toggle"></div>
+                </div>
+                <div class="row-setting" style="border:none;">
+                    <div class="row-label">Save history to account</div>
+                    <div class="toggle"></div>
+                </div>
+            </div>
+            <button class="signout-btn" id="signoutBtn">Sign out</button>
         </div>
 
         <!-- HISTORY -->
         <div class="section-content" id="history">
-            <h3>History</h3>
-            <p id="historyStatus" style="font-size: 12px; color: #666; margin-bottom: 10px;"></p>
-            <div id="historyContainer">
-                <p style="color: #666;">Loading history...</p>
+            <p class="page-title">History</p>
+            <p class="page-sub">Messages analyzed in this session</p>
+            <div class="history-toolbar">
+                <div class="history-filter">
+                    <div class="filter-btn active" data-filter="all">All</div>
+                    <div class="filter-btn" data-filter="accepted">Accepted</div>
+                    <div class="filter-btn" data-filter="rejected">Rejected</div>
+                </div>
+                <button class="clear-btn" id="clearHistoryBtn">Clear history</button>
             </div>
-            <button id="clearHistoryBtn" style="margin-top: 15px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Clear History
-            </button>
+            <p class="history-status" id="historyStatus"></p>
+            <div id="historyContainer">
+                <p class="history-empty">Loading history...</p>
+            </div>
         </div>
 
         <!-- ABOUT -->
         <div class="section-content" id="about">
-            <h3>About</h3>
-            <p>
-                ToneEase is a smart browser extension designed to help users communicate
-                more politely and clearly using tone-aware suggestions.
-            </p>
+            <p class="page-title">About</p>
+            <p class="page-sub">ToneEase v1.0</p>
+            <div class="about-header">
+                <div class="about-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" stroke="#fff" stroke-width="1.5"/>
+                        <path d="M12 8v5l3 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="about-title">ToneEase</div>
+                    <div class="about-desc">AI-powered tone detection for better communication</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h4>What it does</h4>
+                <p>ToneEase analyzes your messages in real time and suggests kinder, more professional rewrites using the Llama 3.3 70B model via the Groq API.</p>
+            </div>
+            <div class="info-card">
+                <h4>Supported platforms</h4>
+                <p>WhatsApp Web, Facebook Messenger, Instagram Direct, and any text input via the extension popup.</p>
+            </div>
+            <div class="info-card">
+                <h4>Built with</h4>
+                <div class="tech-badges">
+                    <span class="badge badge-blue">FastAPI</span>
+                    <span class="badge badge-green">Groq API</span>
+                    <span class="badge badge-amber">Llama 3.3 70B</span>
+                    <span class="badge badge-teal">MySQL</span>
+                    <span class="badge badge-purple">Chrome MV3</span>
+                </div>
+            </div>
         </div>
 
     </div>
