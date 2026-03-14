@@ -6,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #f0f4f8;
+    background: #FFF8F0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,19 +17,20 @@ body {
     background: white;
     padding: 32px;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(75, 46, 43, 0.1);
     width: 360px;
+    border: 1px solid #E3DBBB;
 }
 
 h1 {
     font-size: 22px;
-    color: #0077B6;
+    color: #4B2E2B;
     margin-bottom: 4px;
 }
 
 .subtitle {
     font-size: 13px;
-    color: #666;
+    color: #8C5A3C;
     margin-bottom: 24px;
 }
 
@@ -42,27 +43,29 @@ label {
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 6px;
-    color: #333;
+    color: #4B2E2B;
 }
 
 input {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #E3DBBB;
     border-radius: 6px;
     font-size: 14px;
     outline: none;
+    background: #FFF8F0;
+    color: #4B2E2B;
     transition: border 0.2s;
 }
 
 input:focus {
-    border-color: #0077B6;
+    border-color: #C08552;
 }
 
 .btn {
     width: 100%;
     padding: 11px;
-    background: #0077B6;
+    background: #C08552;
     color: white;
     border: none;
     border-radius: 6px;
@@ -74,11 +77,12 @@ input:focus {
 }
 
 .btn:hover {
-    background: #005f8e;
+    background: #8C5A3C;
 }
 
 .btn:disabled {
-    background: #aaa;
+    background: #E3DBBB;
+    color: #8C5A3C;
     cursor: not-allowed;
 }
 
@@ -107,15 +111,15 @@ input:focus {
     text-align: center;
     margin: 16px 0;
     font-size: 12px;
-    color: #aaa;
+    color: #AEB784;
 }
 
 .guest-btn {
     width: 100%;
     padding: 10px;
     background: white;
-    color: #0077B6;
-    border: 1px solid #0077B6;
+    color: #C08552;
+    border: 1px solid #C08552;
     border-radius: 6px;
     font-size: 13px;
     cursor: pointer;
@@ -123,18 +127,18 @@ input:focus {
 }
 
 .guest-btn:hover {
-    background: #f0f8ff;
+    background: #FFF8F0;
 }
 
 .footer-link {
     text-align: center;
     margin-top: 20px;
     font-size: 13px;
-    color: #666;
+    color: #8C5A3C;
 }
 
 .footer-link a {
-    color: #0077B6;
+    color: #C08552;
     text-decoration: none;
     font-weight: 600;
 }

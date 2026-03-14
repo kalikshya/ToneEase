@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #ffffff;
+    background: #FFF8F0;
 }
 
 .container {
@@ -12,11 +12,12 @@ body {
 h1 {
     margin: 0;
     font-size: 18px;
+    color: #4B2E2B;
 }
 
 .subtitle {
     font-size: 12px;
-    color: #666;
+    color: #8C5A3C;
     margin-bottom: 15px;
 }
 
@@ -26,21 +27,22 @@ h1 {
     justify-content: space-between;
     align-items: center;
     padding: 6px 10px;
-    background: #f0f8ff;
+    background: #F0E6D6;
     border-radius: 6px;
     margin-bottom: 12px;
     font-size: 12px;
+    border: 1px solid #E3DBBB;
 }
 
 .user-bar .username {
-    color: #0077B6;
+    color: #4B2E2B;
     font-weight: 600;
 }
 
 .logout-btn {
     background: none;
     border: none;
-    color: #999;
+    color: #8C5A3C;
     cursor: pointer;
     font-size: 11px;
     text-decoration: underline;
@@ -52,15 +54,16 @@ h1 {
     justify-content: space-between;
     align-items: center;
     padding: 6px 10px;
-    background: #fff8e1;
+    background: #F8F3E1;
     border-radius: 6px;
     margin-bottom: 12px;
     font-size: 12px;
-    color: #666;
+    color: #8C5A3C;
+    border: 1px solid #E3DBBB;
 }
 
 .login-btn {
-    background: #0077B6;
+    background: #C08552;
     color: white;
     border: none;
     border-radius: 4px;
@@ -70,7 +73,7 @@ h1 {
 }
 
 .login-btn:hover {
-    background: #005f8e;
+    background: #8C5A3C;
 }
 
 .section {
@@ -79,6 +82,7 @@ h1 {
     align-items: center;
     margin-bottom: 12px;
     font-size: 13px;
+    color: #4B2E2B;
 }
 
 /* Sensitivity slider */
@@ -90,35 +94,35 @@ h1 {
 .sensitivity-slider {
     width: 100%;
     margin: 8px 0;
+    accent-color: #C08552;
 }
 
 .sensitivity-labels {
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: #666;
+    color: #8C5A3C;
     padding: 0 2px;
 }
 
 .section label {
     font-size: 12px;
+    color: #4B2E2B;
 }
 
 select {
     width: 100%;
     padding: 5px;
     margin-top: 5px;
+    border: 1px solid #E3DBBB;
+    border-radius: 4px;
+    background: #FFF8F0;
+    color: #4B2E2B;
+    font-size: 13px;
 }
 
 .hidden {
     display: none;
-}
-
-.range-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #666;
 }
 
 .footer {
@@ -128,7 +132,7 @@ select {
 
 #settingsBtn {
     font-size: 13px;
-    color: #0077B6;
+    color: #C08552;
     cursor: pointer;
     text-decoration: underline;
 }
@@ -146,7 +150,7 @@ select {
 
 .slider {
     position: absolute;
-    background: #ccc;
+    background: #E3DBBB;
     border-radius: 20px;
     width: 100%;
     height: 100%;
@@ -166,7 +170,7 @@ select {
 }
 
 input:checked + .slider {
-    background: #4a90e2;
+    background: #C08552;
 }
 
 input:checked + .slider::before {
@@ -177,8 +181,9 @@ input:checked + .slider::before {
 .test-section {
     margin: 15px 0;
     padding: 15px;
-    background: #f5f5f5;
+    background: #F8F3E1;
     border-radius: 8px;
+    border: 1px solid #E3DBBB;
 }
 
 .test-label {
@@ -186,24 +191,32 @@ input:checked + .slider::before {
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 13px;
+    color: #4B2E2B;
 }
 
 .test-input {
     width: 100%;
     height: 80px;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #E3DBBB;
     border-radius: 4px;
     resize: vertical;
     font-family: inherit;
     font-size: 13px;
     box-sizing: border-box;
+    background: #FFF8F0;
+    color: #4B2E2B;
+}
+
+.test-input:focus {
+    outline: none;
+    border-color: #C08552;
 }
 
 .analyze-btn {
     margin-top: 8px;
     padding: 8px 16px;
-    background: #2196F3;
+    background: #C08552;
     color: white;
     border: none;
     border-radius: 4px;
@@ -213,11 +226,12 @@ input:checked + .slider::before {
 }
 
 .analyze-btn:hover {
-    background: #1976D2;
+    background: #8C5A3C;
 }
 
 .analyze-btn:disabled {
-    background: #aaa;
+    background: #E3DBBB;
+    color: #8C5A3C;
     cursor: not-allowed;
 }
 
@@ -243,7 +257,7 @@ input:checked + .slider::before {
 
 /* Suggestion Box */
 .suggestion-box {
-    border-top: 1px solid #eee;
+    border-top: 1px solid #E3DBBB;
     margin-top: 12px;
     padding-top: 10px;
     font-size: 12px;
@@ -252,16 +266,17 @@ input:checked + .slider::before {
 .suggestion-title {
     font-weight: bold;
     margin-bottom: 6px;
-    color: #333;
+    color: #4B2E2B;
 }
 
 .suggestion-text {
     margin-bottom: 6px;
+    color: #4B2E2B;
 }
 
 .suggestion-text p {
     margin: 2px 0;
-    color: #555;
+    color: #8C5A3C;
 }
 
 .suggestion-actions {
@@ -276,19 +291,28 @@ input:checked + .slider::before {
     padding: 6px;
     border: none;
     border-radius: 4px;
-    background-color: #0077B6;
+    background: #C08552;
     color: white;
     cursor: pointer;
     font-size: 12px;
+}
+
+.apply-btn:hover {
+    background: #8C5A3C;
 }
 
 .reject-btn {
     flex: 1;
     margin-left: 5px;
     padding: 6px;
-    border: 1px solid #ccc;
+    border: 1px solid #E3DBBB;
     border-radius: 4px;
-    background: #f5f5f5;
+    background: #F8F3E1;
+    color: #4B2E2B;
     cursor: pointer;
     font-size: 12px;
+}
+
+.reject-btn:hover {
+    background: #E3DBBB;
 }
