@@ -12,7 +12,26 @@
     "tabs"
   ],
   "host_permissions": [
-    "http://127.0.0.1:8000/*"
+    "http://127.0.0.1:8000/*",
+    "https://web.whatsapp.com/*",
+    "https://www.facebook.com/*",
+    "https://www.messenger.com/*",
+    "https://www.instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "https://www.facebook.com/messages/*",
+        "https://www.messenger.com/*",
+        "https://www.instagram.com/direct/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
   ],
   "web_accessible_resources": [
     {
