@@ -166,32 +166,46 @@ function saveFeedback(action) {
 function analyzeText(text, input) {
     if (!text || text.trim().length < 3) return;
 
-    chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
-        try {
-            const res = await fetch(`${API_URL}/analyze`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    text: text.trim(),
-                    mode: "auto",
-                    tone: "polite",
-                    sensitivity: "medium",
-                    session_id: response?.session_id || null,
-                    user_id: response?.user_id || null
-                })
-            });
-
-            const result = await res.json();
-            console.log("ToneEase result:", result);
-
-            if (result.needs_rewrite && result.suggestion) {
-                window.toneEaseCurrentHistoryId = result.history_id || null;
-                createSuggestionBox(result.suggestion, input);
+    try {
+        chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, (response) => {
+            if (chrome.runtime.lastError) {
+                console.log("ToneEase: background not ready, retrying...");
+                // Just use null values and continue anyway
+                doAnalyze(text, input, null, null);
+                return;
             }
-        } catch (e) {
-            console.error("ToneEase analyze error:", e);
+            doAnalyze(text, input, response?.user_id || null, response?.session_id || null);
+        });
+    } catch (e) {
+        doAnalyze(text, input, null, null);
+    }
+}
+
+async function doAnalyze(text, input, userId, sessionId) {
+    try {
+        const res = await fetch(`${API_URL}/analyze`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                text: text.trim(),
+                mode: "auto",
+                tone: "polite",
+                sensitivity: "medium",
+                session_id: sessionId,
+                user_id: userId
+            })
+        });
+
+        const result = await res.json();
+        console.log("ToneEase result:", result);
+
+        if (result.needs_rewrite && result.suggestion) {
+            window.toneEaseCurrentHistoryId = result.history_id || null;
+            createSuggestionBox(result.suggestion, input);
         }
-    });
+    } catch (e) {
+        console.error("ToneEase analyze error:", e);
+    }
 }
 
 // ============================================
