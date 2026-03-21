@@ -13,6 +13,7 @@
   ],
   "host_permissions": [
     "http://127.0.0.1:8000/*",
+    "http://localhost/*",
     "https://web.whatsapp.com/*",
     "https://www.facebook.com/*",
     "https://www.messenger.com/*",
@@ -24,6 +25,8 @@
   "content_scripts": [
     {
       "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1:5500/*",
         "https://web.whatsapp.com/*",
         "https://www.facebook.com/messages/*",
         "https://www.messenger.com/*",
