@@ -7,6 +7,10 @@ const API_URL = "http://127.0.0.1:8000";
 // PLATFORM SELECTORS
 // ============================================
 const PLATFORM_SELECTORS = {
+    test: [
+        '#toneease-test-input',
+        'textarea'
+    ],
     whatsapp: [
         'div[contenteditable="true"][data-tab="10"]',
         'div[contenteditable="true"][data-tab="1"]',
@@ -29,6 +33,7 @@ const PLATFORM_SELECTORS = {
 // ============================================
 function detectPlatform() {
     const url = window.location.href;
+    if (url.includes("localhost")) return "test";
     if (url.includes("web.whatsapp.com")) return "whatsapp";
     if (url.includes("facebook.com") || url.includes("messenger.com")) return "facebook";
     if (url.includes("instagram.com")) return "instagram";
