@@ -8,17 +8,17 @@ import pymysql
 from datetime import datetime
 
 # ============================================
-# Railway MySQL Connection
+# Clever Cloud MySQL Connection
 # ============================================
-DB_URL = "mysql://root:mveaIqMEyiVVtRkAcMZFvEXBclNWNAEn@maglev.proxy.rlwy.net:39726/railway"
+DB_URL = "mysql://ude5yjbp0ewv3hvm:zErjFsjSbn5S7HqiBHWs@bcx5fv5waqgibypeolos-mysql.services.clever-cloud.com:3306/cx5fv5waqgibypeolos"
 
 def get_connection():
     return pymysql.connect(
-        host="maglev.proxy.rlwy.net",
-        port=39726,
-        user="root",
-        password="mveaIqMEyiVVtRkAcMZFvEXBclNWNAEn",
-        database="railway",
+        host="bcx5fv5waqgibypeolos-mysql.services.clever-cloud.com",
+        port=3306,
+        user="ude5yjbp0ewv3hvm",
+        password="zErjFsjSbn5S7HqiBHWs",
+        database="bcx5fv5waqgibypeolos",
         charset="utf8mb4"
     )
 
