@@ -29,11 +29,11 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY", "gsk_SlUx4kr2D4HY9gaEyGKEWGdyb3F
 # ============================================
 def get_db():
     return pymysql.connect(
-        host="maglev.proxy.rlwy.net",
-        port=39726,
-        user="root",
-        password="mveaIqMEyiVVtRkAcMZFvEXBclNWNAEn",
-        database="railway",
+        host="bcx5fv5waqgibypeolos-mysql.services.clever-cloud.com",
+        port=3306,
+        user="ude5yjbp0ewv3hvm",
+        password="zErjFsjSbn5S7HqiBHWs",
+        database="bcx5fv5waqgibypeolos",
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor
     )
