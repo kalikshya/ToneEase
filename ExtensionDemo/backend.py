@@ -22,10 +22,10 @@ app.add_middleware(
 # ============================================
 # GROQ API KEY 
 # ============================================
-client = Groq(api_key=os.getenv("GROQ_API_KEY", "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"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY", "gsk_S........"))
 
 # ============================================
-# DATABASE CONNECTION — paste Railway credentials
+# DATABASE CONNECTION — Clever Cloud 
 # ============================================
 def get_db():
     return pymysql.connect(
@@ -100,7 +100,7 @@ async def analyze_message(request: MessageRequest):
 
     sensitivity_map = {
         "low":    "Only flag very obviously rude or aggressive messages. Ignore mildly blunt ones.",
-        "medium": "Flag messages that are harsh, blunt, passive-aggressive, or emotionally charged.",
+        "medium": "Flag messages that are harsh, blunt, dismissive, passive-aggressive, emotionally charged, or contain any negative judgment about a person or their work.",
         "high":   "Flag even slightly negative, cold, or emotionally tense messages."
     }
     sensitivity_instruction = sensitivity_map.get(request.sensitivity, sensitivity_map["medium"])
@@ -108,8 +108,7 @@ async def analyze_message(request: MessageRequest):
     if request.mode == "manual":
         rewrite_instruction = f'Since the user selected manual mode, ALWAYS rewrite the message in a {request.tone} tone regardless of whether it is harsh or not. Set needs_rewrite to true.'
     else:
-        rewrite_instruction = f'Only rewrite if the message is harsh/rude/not normal. Sensitivity rule: {sensitivity_instruction}'
-
+        rewrite_instruction = f'Sensitivity rule: {sensitivity_instruction}. When in doubt, flag it and rewrite it. It is better to suggest a rewrite than to miss a potentially hurtful message.'
     prompt = f"""You are ToneEase, an AI assistant that helps people communicate better by detecting harsh or rude messages and rewriting them professionally.
 
 Analyze this message and respond ONLY with valid JSON, nothing else:
@@ -134,7 +133,7 @@ Respond with this exact JSON only:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": "You are a JSON-only response bot. Never output anything except valid JSON. No markdown, no backticks, no explanations."},
+                {"role": "system", "content": "You are a strict tone detection bot that responds only in JSON. You flag any message that could hurt, offend, or upset someone. When in doubt, always flag and rewrite. Never output anything except valid JSON."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.3,
