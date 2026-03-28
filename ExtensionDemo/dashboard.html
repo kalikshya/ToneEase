@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-
 <div class="dashboard">
 
     <!-- SIDEBAR -->
@@ -16,12 +15,15 @@
             <p>Smart Tone Assistant</p>
         </div>
 
-        <div class="nav-item active" data-target="overview">Overview</div>
-        <div class="nav-item" data-target="modes">Modes</div>
-        <div class="nav-item" data-target="sensitivity">Sensitivity</div>
-        <div class="nav-item" data-target="preferences">Preferences</div>
-        <div class="nav-item" data-target="history">History</div>
-        <div class="nav-item" data-target="about">About</div>
+        <div class="nav-section-label">Navigation</div>
+        <div class="nav-item active" data-target="overview"><span class="nav-dot"></span> Overview</div>
+        <div class="nav-item" data-target="modes"><span class="nav-dot"></span> Modes</div>
+        <div class="nav-item" data-target="sensitivity"><span class="nav-dot"></span> Sensitivity</div>
+        <div class="nav-item" data-target="preferences"><span class="nav-dot"></span> Preferences</div>
+
+        <div class="nav-section-label" style="margin-top:8px;">Data</div>
+        <div class="nav-item" data-target="history"><span class="nav-dot"></span> History</div>
+        <div class="nav-item" data-target="about"><span class="nav-dot"></span> About</div>
 
         <div class="sidebar-bottom">
             <div class="user-chip">
@@ -39,171 +41,211 @@
 
         <!-- OVERVIEW -->
         <div class="section-content active" id="overview">
-            <p class="page-title">Overview</p>
-            <p class="page-sub">Your ToneEase activity at a glance</p>
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Messages analyzed</div>
-                    <div class="stat-value blue" id="statTotal">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Suggestions accepted</div>
-                    <div class="stat-value green" id="statAccepted">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Acceptance rate</div>
-                    <div class="stat-value amber" id="statRate">—</div>
-                </div>
+            <div class="page-header">
+                <div class="page-title">Overview</div>
+                <div class="page-sub">Your ToneEase activity at a glance</div>
             </div>
-            <div class="info-card">
-                <h4>Active settings</h4>
-                <div class="row-setting">
-                    <div class="row-label">Automatic mode</div>
-                    <span class="badge badge-green">On</span>
+            <div class="page-body">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Messages Analyzed</div>
+                        <div class="stat-value" id="statTotal">—</div>
+                        <div class="stat-trend">Total since you started</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Suggestions Accepted</div>
+                        <div class="stat-value green" id="statAccepted">—</div>
+                        <div class="stat-trend">Rewrites you applied</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Acceptance Rate</div>
+                        <div class="stat-value amber" id="statRate">—</div>
+                        <div class="stat-trend">How often you accept</div>
+                    </div>
                 </div>
-                <div class="row-setting">
-                    <div class="row-label">Manual mode</div>
-                    <span class="badge badge-gray">Off</span>
-                </div>
-                <div class="row-setting" style="border:none;">
-                    <div class="row-label">Sensitivity</div>
-                    <span class="badge badge-amber">Medium</span>
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-title">Active Configuration</div>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="row-setting">
+                            <div><div class="row-label">Automatic mode</div><div class="row-sub">Detects tone issues as you type</div></div>
+                            <span class="badge badge-green">Enabled</span>
+                        </div>
+                        <div class="row-setting">
+                            <div><div class="row-label">Manual mode</div><div class="row-sub">Choose tone before rewriting</div></div>
+                            <span class="badge badge-gray">Disabled</span>
+                        </div>
+                        <div class="row-setting">
+                            <div><div class="row-label">Sensitivity level</div><div class="row-sub">How strictly messages are flagged</div></div>
+                            <span class="badge badge-amber">Medium</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- MODES -->
         <div class="section-content" id="modes">
-            <p class="page-title">Modes</p>
-            <p class="page-sub">Control how ToneEase analyzes your messages</p>
-            <div class="info-card">
-                <div class="row-setting">
-                    <div>
-                        <div class="row-label">Automatic mode</div>
-                        <div class="row-sub">Detects tone issues as you type</div>
-                    </div>
-                    <div class="toggle"></div>
-                </div>
-                <div class="row-setting" style="border:none;">
-                    <div>
-                        <div class="row-label">Manual mode</div>
-                        <div class="row-sub">You choose the target tone before rewriting</div>
-                    </div>
-                    <div class="toggle off"></div>
-                </div>
+            <div class="page-header">
+                <div class="page-title">Modes</div>
+                <div class="page-sub">Control how ToneEase analyzes your messages</div>
             </div>
-            <div class="info-card">
-                <h4>Preferred tone</h4>
-                <p>Used when manual mode is active</p>
-                <div class="tech-badges" style="margin-top:12px;">
-                    <span class="badge badge-blue">Polite</span>
-                    <span class="badge badge-gray">Kind</span>
-                    <span class="badge badge-gray">Friendly</span>
-                    <span class="badge badge-gray">Professional</span>
-                    <span class="badge badge-gray">Confident</span>
+            <div class="page-body">
+                <div class="settings-card" style="margin-bottom:16px;">
+                    <div class="settings-card-header">
+                        <div class="settings-card-title">Detection modes</div>
+                    </div>
+                    <div class="settings-card-body">
+                        <div class="row-setting">
+                            <div><div class="row-label">Automatic mode</div><div class="row-sub">Detects tone issues as you type — no button clicks needed</div></div>
+                            <div class="toggle"></div>
+                        </div>
+                        <div class="row-setting">
+                            <div><div class="row-label">Manual mode</div><div class="row-sub">You choose the target tone before rewriting</div></div>
+                            <div class="toggle off"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div class="settings-card-title">Preferred tone</div>
+                        <span class="badge badge-gray" style="font-size:10px;">Used in manual mode</span>
+                    </div>
+                    <div class="settings-card-body" style="padding:16px 22px;">
+                        <div class="tone-selector">
+                            <div class="tone-option active">Polite</div>
+                            <div class="tone-option">Kind</div>
+                            <div class="tone-option">Friendly</div>
+                            <div class="tone-option">Professional</div>
+                            <div class="tone-option">Confident</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- SENSITIVITY -->
         <div class="section-content" id="sensitivity">
-            <p class="page-title">Sensitivity</p>
-            <p class="page-sub">How strictly ToneEase flags emotional language</p>
-            <div class="info-card">
-                <div class="slider-row">
-                    <label>Detection sensitivity — <strong>Medium</strong></label>
-                    <div class="slider-track">
-                        <div class="slider-fill"></div>
-                        <div class="slider-thumb"></div>
-                    </div>
-                    <div class="slider-labels">
-                        <span>Low</span>
-                        <span>Medium</span>
-                        <span>High</span>
+            <div class="page-header">
+                <div class="page-title">Sensitivity</div>
+                <div class="page-sub">How strictly ToneEase flags emotional language</div>
+            </div>
+            <div class="page-body">
+                <div class="settings-card" style="margin-bottom:20px;">
+                    <div class="settings-card-body" style="padding:22px;">
+                        <div class="slider-row">
+                            <label>Detection sensitivity — <strong>Medium</strong></label>
+                            <div class="slider-track">
+                                <div class="slider-fill"></div>
+                                <div class="slider-thumb"></div>
+                            </div>
+                            <div class="slider-labels">
+                                <span>Low</span><span>Medium</span><span>High</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="info-card">
-                <h4>Low</h4>
-                <p>Only flags very obviously rude or aggressive messages.</p>
-            </div>
-            <div class="info-card" style="border-color:#C08552;">
-                <h4>Medium &nbsp;<span class="badge badge-blue">Active</span></h4>
-                <p>Flags harsh, blunt, passive-aggressive, or emotionally charged messages.</p>
-            </div>
-            <div class="info-card">
-                <h4>High</h4>
-                <p>Flags even slightly negative, cold, or emotionally tense messages.</p>
+                <div class="sensitivity-cards">
+                    <div class="sensitivity-level">
+                        <h4>Low</h4>
+                        <p>Only flags very obviously rude or aggressive messages. Best for casual use.</p>
+                    </div>
+                    <div class="sensitivity-level active-level">
+                        <h4>Medium <span class="badge badge-amber" style="font-size:10px;vertical-align:middle;">Active</span></h4>
+                        <p>Flags harsh, blunt, or passive-aggressive messages. Recommended for most users.</p>
+                    </div>
+                    <div class="sensitivity-level">
+                        <h4>High</h4>
+                        <p>Flags even slightly negative or cold messages. Best for professional contexts.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- PREFERENCES -->
         <div class="section-content" id="preferences">
-            <p class="page-title">User preferences</p>
-            <p class="page-sub">Manage your account</p>
-            <div class="info-card">
-                <div style="display:flex; align-items:center; gap:14px;">
-                    <div class="avatar" id="prefAvatar" style="width:48px; height:48px; font-size:16px;">?</div>
+            <div class="page-header">
+                <div class="page-title">Preferences</div>
+                <div class="page-sub">Manage your account</div>
+            </div>
+            <div class="page-body">
+                <div class="pref-hero">
+                    <div class="pref-avatar-large" id="prefAvatar">?</div>
                     <div>
-                        <div style="font-size:16px; font-weight:600; color:#4B2E2B;" id="prefUsername">Guest</div>
-                        <div style="font-size:13px; color:#8C5A3C; margin-top:2px;" id="prefEmail">Not signed in</div>
+                        <div class="pref-username" id="prefUsername">Guest</div>
+                        <div class="pref-email" id="prefEmail">Not signed in</div>
                     </div>
                 </div>
+                <button class="signout-btn" id="signoutBtn">Sign out</button>
             </div>
-            <button class="signout-btn" id="signoutBtn">Sign out</button>
         </div>
 
         <!-- HISTORY -->
         <div class="section-content" id="history">
-            <p class="page-title">History</p>
-            <p class="page-sub">Messages analyzed in this session</p>
-            <div class="history-toolbar">
-                <div class="history-filter">
-                    <div class="filter-btn active" data-filter="all">All</div>
-                    <div class="filter-btn" data-filter="accepted">Accepted</div>
-                    <div class="filter-btn" data-filter="rejected">Rejected</div>
-                </div>
-                <button class="clear-btn" id="clearHistoryBtn">Clear history</button>
+            <div class="page-header">
+                <div class="page-title">History</div>
+                <div class="page-sub">All your analyzed messages</div>
             </div>
-            <p class="history-status" id="historyStatus"></p>
-            <div id="historyContainer">
-                <p class="history-empty">Loading history...</p>
+            <div class="page-body">
+                <div class="history-toolbar">
+                    <div class="history-filter">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="accepted">Accepted</button>
+                        <button class="filter-btn" data-filter="rejected">Rejected</button>
+                    </div>
+                    <button class="clear-btn" id="clearHistoryBtn">Clear history</button>
+                </div>
+                <p class="history-status" id="historyStatus"></p>
+                <div id="historyContainer">
+                    <div class="history-empty">
+                        <div class="history-empty-icon">📭</div>
+                        <p>Loading history...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- ABOUT -->
         <div class="section-content" id="about">
-            <p class="page-title">About</p>
-            <p class="page-sub">ToneEase v1.0</p>
-            <div class="about-header">
-                <div class="about-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" stroke="#E3DBBB" stroke-width="1.5"/>
-                        <path d="M12 8v5l3 2" stroke="#E3DBBB" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
+            <div class="page-header">
+                <div class="page-title">About</div>
+                <div class="page-sub">ToneEase v1.0</div>
+            </div>
+            <div class="page-body">
+                <div class="about-hero">
+                    <div class="about-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" stroke="#E3DBBB" stroke-width="1.5"/>
+                            <path d="M12 8v5l3 2" stroke="#E3DBBB" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="about-hero-text">
+                        <div class="about-title">ToneEase</div>
+                        <div class="about-version">Version 1.0 · Chrome Extension</div>
+                        <div class="about-desc">AI-powered tone detection for better communication</div>
+                    </div>
                 </div>
-                <div>
-                    <div class="about-title">ToneEase</div>
-                    <div class="about-desc">AI-powered tone detection for better communication</div>
+
+                <div class="info-card">
+                    <h4>What it does</h4>
+                    <p>ToneEase analyzes your messages in real time and suggests kinder rewrites - helping you communicate better across messaging platforms.</p>
                 </div>
-            </div>
-            <div class="info-card">
-                <h4>What it does</h4>
-                <p>ToneEase analyzes your messages in real time and suggests kinder, more professional rewrites - helping you communicate better across platforms.</p>
-            </div>
-            <div class="info-card">
-                <h4>Supported platforms</h4>
-                <p>WhatsApp Web, Facebook Messenger, Instagram Direct, and any text input via the extension popup.</p>
-            </div>
-            <div class="info-card">
-                <h4>How it works</h4>
-                <p>As you type, ToneEase detects the emotional tone of your message. If it finds harsh or negative language, it suggests a rewritten version that conveys the same meaning more politely. You can accept or reject any suggestion.</p>
+
+                <div class="info-card">
+                    <h4>How it works</h4>
+                    <p>As you type, ToneEase detects the emotional tone of your message. If it finds harsh or negative language, it suggests a rewritten version that conveys the same meaning more politely. You can accept or reject any suggestion - and everything is saved to your history.</p>
+                </div>
+
+                <div class="info-card">
+                    <h4>Supported platforms</h4>
+                    <p>WhatsApp Web, Facebook Messenger, Instagram Direct, and any text input via the extension popup.</p>
+                </div>
             </div>
         </div>
 
     </div>
 </div>
-
 <script src="dashboard.js"></script>
 </body>
 </html>

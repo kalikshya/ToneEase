@@ -42,9 +42,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Sign out button
     const signoutBtn = document.getElementById("signoutBtn");
-    if (signoutBtn) signoutBtn.addEventListener("click", () => {
-        chrome.storage.local.set({ user_id: null, username: null, email: null, is_logged_in: false }, () => {
-            window.close();
+    if (signoutBtn) {
+        signoutBtn.addEventListener("click", () => {
+            chrome.storage.local.set({
+                user_id: null, username: null, email: null, is_logged_in: false
+            }, () => { window.close(); });
+        });
+    }
+
+    // Tone option selection
+    document.querySelectorAll(".tone-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+            document.querySelectorAll(".tone-option").forEach(o => o.classList.remove("active"));
+            opt.classList.add("active");
         });
     });
 
@@ -52,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================
-// LOAD USER INFO INTO SIDEBAR + PREFERENCES
+// LOAD USER INFO
 // ============================================
 function loadUserInfo() {
     chrome.storage.local.get(["user_id", "username", "email", "is_logged_in"], (data) => {
@@ -60,19 +70,21 @@ function loadUserInfo() {
         const email = data.is_logged_in && data.email ? data.email : "Not signed in";
         const initials = username !== "Guest" ? username.substring(0, 2).toUpperCase() : "?";
 
-        const sidebarAvatar = document.getElementById("sidebarAvatar");
-        const sidebarUsername = document.getElementById("sidebarUsername");
-        const sidebarEmail = document.getElementById("sidebarEmail");
-        const prefAvatar = document.getElementById("prefAvatar");
-        const prefUsername = document.getElementById("prefUsername");
-        const prefEmail = document.getElementById("prefEmail");
+        const els = {
+            sidebarAvatar: document.getElementById("sidebarAvatar"),
+            sidebarUsername: document.getElementById("sidebarUsername"),
+            sidebarEmail: document.getElementById("sidebarEmail"),
+            prefAvatar: document.getElementById("prefAvatar"),
+            prefUsername: document.getElementById("prefUsername"),
+            prefEmail: document.getElementById("prefEmail"),
+        };
 
-        if (sidebarAvatar) sidebarAvatar.textContent = initials;
-        if (sidebarUsername) sidebarUsername.textContent = username;
-        if (sidebarEmail) sidebarEmail.textContent = email;
-        if (prefAvatar) prefAvatar.textContent = initials;
-        if (prefUsername) prefUsername.textContent = username;
-        if (prefEmail) prefEmail.textContent = email;
+        if (els.sidebarAvatar) els.sidebarAvatar.textContent = initials;
+        if (els.sidebarUsername) els.sidebarUsername.textContent = username;
+        if (els.sidebarEmail) els.sidebarEmail.textContent = email;
+        if (els.prefAvatar) els.prefAvatar.textContent = initials;
+        if (els.prefUsername) els.prefUsername.textContent = username;
+        if (els.prefEmail) els.prefEmail.textContent = email;
     });
 }
 
@@ -84,7 +96,11 @@ async function loadHistory() {
     const historyStatus = document.getElementById("historyStatus");
     if (!historyContainer) return;
 
-    historyContainer.innerHTML = '<p class="history-empty">Loading...</p>';
+    historyContainer.innerHTML = `
+        <div class="history-empty">
+            <div class="history-empty-icon">⏳</div>
+            <p>Loading your history...</p>
+        </div>`;
 
     chrome.storage.local.get(["user_id", "username", "is_logged_in", "session_id"], async (data) => {
         try {
@@ -101,7 +117,11 @@ async function loadHistory() {
                 const result = await response.json();
                 records = result.history || [];
             } else {
-                historyContainer.innerHTML = '<p class="history-empty">No history yet. Start using ToneEase!</p>';
+                historyContainer.innerHTML = `
+                    <div class="history-empty">
+                        <div class="history-empty-icon">📭</div>
+                        <p>No history yet. Start using ToneEase!</p>
+                    </div>`;
                 return;
             }
 
@@ -111,13 +131,17 @@ async function loadHistory() {
 
         } catch (error) {
             console.error("Error loading history:", error);
-            historyContainer.innerHTML = '<p class="history-empty" style="color:#c62828;">Failed to load history. Make sure backend is running!</p>';
+            historyContainer.innerHTML = `
+                <div class="history-empty">
+                    <div class="history-empty-icon">⚠️</div>
+                    <p>Failed to load history. Make sure backend is running!</p>
+                </div>`;
         }
     });
 }
 
 // ============================================
-// UPDATE OVERVIEW STATS
+// UPDATE STATS
 // ============================================
 function updateStats(records) {
     const total = records.length;
@@ -134,7 +158,7 @@ function updateStats(records) {
 }
 
 // ============================================
-// RENDER TABLE WITH FILTER
+// RENDER TABLE
 // ============================================
 function renderTable(filter) {
     const historyContainer = document.getElementById("historyContainer");
@@ -145,11 +169,16 @@ function renderTable(filter) {
     if (filter === "rejected") records = allRecords.filter(r => r.feedback_action === "rejected");
 
     if (records.length === 0) {
-        historyContainer.innerHTML = '<p class="history-empty">No records found.</p>';
+        historyContainer.innerHTML = `
+            <div class="history-empty">
+                <div class="history-empty-icon">📭</div>
+                <p>No records found.</p>
+            </div>`;
         return;
     }
 
     let tableHTML = `
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -161,36 +190,27 @@ function renderTable(filter) {
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-    `;
+            <tbody>`;
 
     records.forEach(entry => {
         const action = entry.feedback_action || "pending";
         const actionClass = action === "accepted" ? "action-accepted" :
                             action === "rejected" ? "action-rejected" : "action-pending";
-        const date = new Date(entry.created_at).toLocaleDateString("en-GB", { day:"numeric", month:"short" });
-        const toneColor = getToneColor(action);
+        const date = new Date(entry.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
         tableHTML += `
             <tr>
-                <td style="white-space:nowrap; color:#999;">${date}</td>
+                <td style="white-space:nowrap; color:var(--text-light);">${date}</td>
                 <td>${entry.original_text || "N/A"}</td>
                 <td>${entry.rewritten_text || "—"}</td>
-                <td><span class="tone-pill" style="${toneColor}">${entry.detected_tone || "neutral"}</span></td>
-                <td style="text-transform:capitalize;">${entry.mode || "auto"}</td>
+                <td><span class="tone-pill">${entry.detected_tone || "neutral"}</span></td>
+                <td style="text-transform:capitalize; color:var(--text-light);">${entry.mode || "auto"}</td>
                 <td><span class="${actionClass}">${action}</span></td>
-            </tr>
-        `;
+            </tr>`;
     });
 
-    tableHTML += `</tbody></table>`;
+    tableHTML += `</tbody></table></div>`;
     historyContainer.innerHTML = tableHTML;
-}
-
-function getToneColor(action) {
-    if (action === "accepted") return "background:#e8f5e9; color:#2e7d32;";
-    if (action === "rejected") return "background:#ffebee; color:#c62828;";
-    return "background:#f5f5f5; color:#888;";
 }
 
 // ============================================
