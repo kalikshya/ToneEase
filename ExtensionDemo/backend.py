@@ -119,7 +119,7 @@ Message: "{text}"
 Instructions:
 1. Decide if this message needs rewriting (needs_rewrite: true or false)
    - {rewrite_instruction}
-2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. You may naturally include 1-2 relevant emojis in the rewrite ONLY if they genuinely fit.
+2. 2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. Do NOT include any emojis.
 3. If needs_rewrite is false: set suggestion to null.
 4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite")
 
