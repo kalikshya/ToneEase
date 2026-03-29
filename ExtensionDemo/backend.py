@@ -22,7 +22,7 @@ app.add_middleware(
 # ============================================
 # GROQ API KEY 
 # ============================================
-client = Groq(api_key=os.getenv("GROQ_API_KEY", "gsk_S........"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY", "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"))
 
 # ============================================
 # DATABASE CONNECTION — Clever Cloud 
@@ -35,7 +35,8 @@ def get_db():
         password="zErjFsjSbn5S7HqiBHWs",
         database="bcx5fv5waqgibypeolos",
         charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor
+        cursorclass=pymysql.cursors.DictCursor,
+        init_command = "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
     )
 
 # ============================================
