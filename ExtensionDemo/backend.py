@@ -136,7 +136,7 @@ Respond with this exact JSON only:
                 {"role": "system", "content": "You are a strict tone detection bot that responds only in JSON. You flag any message that could hurt, offend, or upset someone. When in doubt, always flag and rewrite. Never output anything except valid JSON."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.3,
+            temperature=0.1,
             max_tokens=300
         )
 
