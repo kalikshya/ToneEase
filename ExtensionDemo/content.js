@@ -1,7 +1,7 @@
 // ToneEase Content Script
 // Runs on: WhatsApp Web, Facebook Messenger, Instagram
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
 // ============================================
 // PLATFORM SELECTORS

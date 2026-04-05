@@ -1,6 +1,6 @@
 console.log("Dashboard loaded");
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
 localStorage.removeItem("toneease_history");
 

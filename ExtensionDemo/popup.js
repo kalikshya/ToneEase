@@ -1,6 +1,6 @@
 console.log("ToneEase Popup Loaded");
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
 // DOM Elements
 const autoToggle = document.getElementById("autoMode");

@@ -14,6 +14,7 @@
   "host_permissions": [
     "http://127.0.0.1:8000/*",
     "http://localhost/*",
+    "https://kalikshya-toneease-backend.hf.space/*",
     "https://web.whatsapp.com/*",
     "https://www.facebook.com/*",
     "https://www.messenger.com/*",
