@@ -20,23 +20,23 @@ app.add_middleware(
 )
 
 # ============================================
-# GROQ API KEY
+# GROQ API KEY 
 # ============================================
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY", "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"))
 
 # ============================================
-# DATABASE CONNECTION — Clever Cloud
+# DATABASE CONNECTION — Clever Cloud 
 # ============================================
 def get_db():
     return pymysql.connect(
-        host=os.getenv("DB_HOST"),
+        host="bcx5fv5waqgibypeolos-mysql.services.clever-cloud.com",
         port=3306,
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
+        user="ude5yjbp0ewv3hvm",
+        password="zErjFsjSbn5S7HqiBHWs",
+        database="bcx5fv5waqgibypeolos",
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
-        init_command="SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+        init_command = "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
     )
 
 # ============================================
@@ -110,7 +110,6 @@ async def analyze_message(request: MessageRequest):
         rewrite_instruction = f'Since the user selected manual mode, ALWAYS rewrite the message in a {request.tone} tone regardless of whether it is harsh or not. Set needs_rewrite to true.'
     else:
         rewrite_instruction = f'Sensitivity rule: {sensitivity_instruction}. When in doubt, flag it and rewrite it. It is better to suggest a rewrite than to miss a potentially hurtful message.'
-
     prompt = f"""You are ToneEase, an AI assistant that helps people communicate better by detecting harsh or rude messages and rewriting them professionally.
 
 Analyze this message and respond ONLY with valid JSON, nothing else:
@@ -120,7 +119,7 @@ Message: "{text}"
 Instructions:
 1. Decide if this message needs rewriting (needs_rewrite: true or false)
    - {rewrite_instruction}
-2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. Do NOT include any emojis.
+2. 2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. Do NOT include any emojis.
 3. If needs_rewrite is false: set suggestion to null.
 4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite")
 
@@ -154,6 +153,7 @@ Respond with this exact JSON only:
         detected_tone = result.get("detected_tone", "neutral") if needs_rewrite else "neutral"
         suggestion = result.get("suggestion", None)
 
+        # Save to history table
         conn = get_db()
         try:
             cursor = conn.cursor()
@@ -337,4 +337,4 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860, log_level="info")
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
