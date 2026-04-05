@@ -55,20 +55,21 @@ function getTextFromInput(input) {
 // ============================================
 function setTextInInput(input, text) {
     input.focus();
-
     if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
-        // For normal inputs
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-        nativeInputValueSetter.call(input, text);
+        input.value = text;
         input.dispatchEvent(new Event('input', { bubbles: true }));
     } else {
-        // For contenteditable divs (WhatsApp, Instagram, Facebook)
-        input.focus();
-        document.execCommand('selectAll', false, null);
-        document.execCommand('delete', false, null);
-        document.execCommand('insertText', false, text);
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
+        // WhatsApp contenteditable
+        input.innerHTML = '';
+        input.textContent = text;
+        input.dispatchEvent(new InputEvent('input', { bubbles: true, data: text }));
+        // Move cursor to end
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(input);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
 }
 
@@ -130,6 +131,7 @@ function createSuggestionBox(suggestion, input) {
     document.body.appendChild(box);
 
     document.getElementById("toneease-accept").addEventListener("click", () => {
+        window.toneEaseJustAccepted = true;
         setTextInInput(input, suggestion);
         removeSuggestionBox();
         saveFeedback("accepted");
@@ -227,8 +229,9 @@ function attachToInput(input) {
     input.addEventListener("input", () => {
         clearTimeout(typingTimer);
         removeSuggestionBox();
+        window.toneEaseJustAccepted = false;
         const text = getTextFromInput(input);
-        if (text.trim().length > 3) {
+        if (text.trim().length > 3 && !window.toneEaseJustAccepted) {
             typingTimer = setTimeout(() => {
                 analyzeText(text, input);
             }, 1500);
