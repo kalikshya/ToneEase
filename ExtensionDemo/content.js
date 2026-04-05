@@ -54,18 +54,21 @@ function getTextFromInput(input) {
 // SET TEXT IN INPUT
 // ============================================
 function setTextInInput(input, text) {
+    input.focus();
+
     if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
-        input.value = text;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
+        // For normal inputs
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        nativeInputValueSetter.call(input, text);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
     } else {
-        input.innerText = text;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        const range = document.createRange();
-        const sel = window.getSelection();
-        range.selectNodeContents(input);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        // For contenteditable divs (WhatsApp, Instagram, Facebook)
+        input.focus();
+        document.execCommand('selectAll', false, null);
+        document.execCommand('delete', false, null);
+        document.execCommand('insertText', false, text);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 }
 
