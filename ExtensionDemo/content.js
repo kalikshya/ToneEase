@@ -92,7 +92,7 @@ function createSuggestionBox(suggestion, input) {
 
     box.style.cssText = `
         position: absolute;
-        top: ${rect.bottom + scrollY + 8}px;
+        top: ${rect.top + scrollY - 170}px;
         left: ${rect.left + scrollX}px;
         z-index: 999999;
         background: #FFF8F0;
