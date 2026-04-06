@@ -55,7 +55,6 @@ function getTextFromInput(input) {
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
-    input.focus();
 
     try {
         if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
@@ -63,26 +62,25 @@ async function setTextInInput(input, text) {
             input.dispatchEvent(new Event('input', { bubbles: true }));
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
-            // For WhatsApp/Instagram/Facebook contenteditable
-            // Step 1: Select all existing content using Range
-            input.focus();
-            const range = document.createRange();
-            range.selectNodeContents(input);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-
-            // Step 2: Wait a bit then write to clipboard and paste
             setTimeout(async () => {
                 try {
+                    input.focus();
+                    const range = document.createRange();
+                    range.selectNodeContents(input);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
                     await navigator.clipboard.writeText(text);
                     document.execCommand('paste', false, null);
                 } catch (err) {
-                    // Fallback if clipboard fails
+                    console.error("Paste failed:", err);
                     document.execCommand('insertText', false, text);
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
-            }, 300);
+            }, 100);
         }
     } catch (e) {
         console.error("ToneEase setTextInInput error:", e);
