@@ -53,38 +53,26 @@ function getTextFromInput(input) {
 // ============================================
 // SET TEXT IN INPUT
 // ============================================
-function setTextInInput(input, text) {
+async function setTextInInput(input, text) {
     isAccepting = true;
 
     input.focus();
 
-    if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
-        input.value = text;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-    } else {
-        // For WhatsApp/Instagram/Facebook contenteditable
-        // Method 1: execCommand (works best for React-based apps)
-        input.focus();
-        const selection = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(input);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        document.execCommand('insertText', false, text);
-
-        // If execCommand didn't work, fallback
-        if (getTextFromInput(input) !== text) {
-            input.innerText = text;
-            input.dispatchEvent(new InputEvent('input', { bubbles: true, data: text }));
-            // Move cursor to end
-            const r = document.createRange();
-            const s = window.getSelection();
-            r.selectNodeContents(input);
-            r.collapse(false);
-            s.removeAllRanges();
-            s.addRange(r);
+    try {
+        if (input.tagName === "TEXTAREA" || input.tagName === "INPUT") {
+            input.value = text;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+            document.execCommand('selectAll', false, null);
+            await navigator.clipboard.writeText(text);
+            document.execCommand('paste', false, null);
         }
+    } catch(e) {
+        console.error("ToneEase setTextInInput error:", e);
     }
+
+    setTimeout(() => { isAccepting = false; }, 2000);
+}
 
     // Reset flag after a short delay
     setTimeout(() => {
@@ -149,11 +137,11 @@ function createSuggestionBox(suggestion, input) {
 
     document.body.appendChild(box);
 
-    document.getElementById("toneease-accept").addEventListener("click", (e) => {
-        e.stopPropagation();
-        removeSuggestionBox();
-        setTextInInput(input, suggestion);
-        saveFeedback("accepted");
+    document.getElementById("toneease-accept").addEventListener("click", async (e) => {
+    e.stopPropagation();
+    removeSuggestionBox();
+    await setTextInInput(input, suggestion);
+    saveFeedback("accepted");
     });
 
     document.getElementById("toneease-reject").addEventListener("click", (e) => {
