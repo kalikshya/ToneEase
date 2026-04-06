@@ -62,22 +62,24 @@ async function setTextInInput(input, text) {
             input.dispatchEvent(new Event('input', { bubbles: true }));
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
+            input.focus();
             setTimeout(async () => {
                 try {
-                    input.focus();
-                    const range = document.createRange();
-                    range.selectNodeContents(input);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-
-                    await new Promise(resolve => setTimeout(resolve, 100));
-
+                    // Write to clipboard first
                     await navigator.clipboard.writeText(text);
-                    document.execCommand('paste', false, null);
+                    
+                    await new Promise(r => setTimeout(r, 50));
+                    
+                    // Select all text
+                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
+                    
+                    await new Promise(r => setTimeout(r, 50));
+                    
+                    // Paste from clipboard
+                    document.execCommand('paste');
+                    
                 } catch (err) {
-                    console.error("Paste failed:", err);
-                    document.execCommand('insertText', false, text);
+                    console.error("Failed:", err);
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
             }, 100);
@@ -87,7 +89,6 @@ async function setTextInInput(input, text) {
         isAccepting = false;
     }
 }
-
 // ============================================
 // REMOVE SUGGESTION BOX
 // ============================================
