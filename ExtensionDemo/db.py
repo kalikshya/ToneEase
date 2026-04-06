@@ -98,7 +98,12 @@ def create_tables():
         )
     """)
     print(" feedback table created")
-
+    cursor.execute("ALTER TABLE history CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    cursor.execute("ALTER TABLE feedback CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    cursor.execute("ALTER TABLE sessions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    cursor.execute("ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    cursor.execute("ALTER TABLE tone_settings CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    print("Emoji support enabled!")
     conn.commit()
     cursor.close()
     conn.close()
