@@ -243,9 +243,24 @@ document.addEventListener("DOMContentLoaded", () => {
     rewrittenText = document.getElementById("rewrittenText");
 
     const analyzeBtn = document.getElementById("analyzeBtn");
-    
 
     initUserState();
+
+    // Load saved toggle state
+    chrome.storage.local.get(["toneease_enabled"], (data) => {
+        const masterToggle = document.getElementById("masterToggle");
+        if (masterToggle) {
+            masterToggle.checked = data.toneease_enabled !== false;
+        }
+    });
+
+    // Save toggle state when changed
+    const masterToggle = document.getElementById("masterToggle");
+    if (masterToggle) {
+        masterToggle.addEventListener("change", () => {
+            chrome.storage.local.set({ toneease_enabled: masterToggle.checked });
+        });
+    }
 
     if (analyzeBtn && testInput) {
         analyzeBtn.addEventListener("click", () => {
