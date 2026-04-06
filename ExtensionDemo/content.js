@@ -1,7 +1,7 @@
 // ToneEase Content Script
 const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
-let isAccepting = false; // flag to prevent re-analysis after accept
+let isAccepting = false;
 
 // ============================================
 // PLATFORM SELECTORS
@@ -55,7 +55,6 @@ function getTextFromInput(input) {
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
-
     input.focus();
 
     try {
@@ -63,18 +62,17 @@ async function setTextInInput(input, text) {
             input.value = text;
             input.dispatchEvent(new Event('input', { bubbles: true }));
         } else {
+            // Select all existing text
             document.execCommand('selectAll', false, null);
+            // Write to clipboard
             await navigator.clipboard.writeText(text);
+            // Paste from clipboard
             document.execCommand('paste', false, null);
         }
-    } catch(e) {
+    } catch (e) {
         console.error("ToneEase setTextInInput error:", e);
     }
 
-    setTimeout(() => { isAccepting = false; }, 2000);
-}
-
-    // Reset flag after a short delay
     setTimeout(() => {
         isAccepting = false;
     }, 2000);
@@ -138,10 +136,10 @@ function createSuggestionBox(suggestion, input) {
     document.body.appendChild(box);
 
     document.getElementById("toneease-accept").addEventListener("click", async (e) => {
-    e.stopPropagation();
-    removeSuggestionBox();
-    await setTextInInput(input, suggestion);
-    saveFeedback("accepted");
+        e.stopPropagation();
+        removeSuggestionBox();
+        await setTextInInput(input, suggestion);
+        saveFeedback("accepted");
     });
 
     document.getElementById("toneease-reject").addEventListener("click", (e) => {
@@ -184,7 +182,7 @@ function saveFeedback(action) {
 // ============================================
 function analyzeText(text, input) {
     if (!text || text.trim().length < 3) return;
-    if (isAccepting) return; // Don't analyze if we just accepted
+    if (isAccepting) return;
 
     chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
         if (chrome.runtime.lastError) {
@@ -196,7 +194,7 @@ function analyzeText(text, input) {
 }
 
 async function doAnalyze(text, input, userId, sessionId) {
-    if (isAccepting) return; // Double check
+    if (isAccepting) return;
     try {
         const res = await fetch(`${API_URL}/analyze`, {
             method: "POST",
@@ -232,7 +230,7 @@ function attachToInput(input) {
 
     let typingTimer;
     input.addEventListener("input", () => {
-        if (isAccepting) return; // Skip if we just accepted
+        if (isAccepting) return;
         clearTimeout(typingTimer);
         removeSuggestionBox();
         const text = getTextFromInput(input);
