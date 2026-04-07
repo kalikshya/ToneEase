@@ -100,16 +100,16 @@ async def analyze_message(request: MessageRequest):
     ensure_session(session_id, request.user_id)
 
     sensitivity_map = {
-        "low":    "Only flag very obviously rude or aggressive messages. Ignore mildly blunt ones.",
-        "medium": "Flag messages that are harsh, blunt, dismissive, passive-aggressive, emotionally charged, or contain any negative judgment about a person or their work.",
-        "high":   "Flag even slightly negative, cold, or emotionally tense messages."
+        "low":    "Only flag messages that are clearly rude, hostile, or contain insults/profanity. Positive, neutral, and mildly blunt messages should NOT be flagged.",
+        "medium": "Flag messages that are rude, aggressive, dismissive, passive-aggressive, or sarcastic. Do NOT flag positive, friendly, or neutral messages.",
+        "high":   "Flag messages that are even slightly negative, cold, or could be misinterpreted as rude. But still do NOT flag clearly positive or kind messages."
     }
     sensitivity_instruction = sensitivity_map.get(request.sensitivity, sensitivity_map["medium"])
 
     if request.mode == "manual":
         rewrite_instruction = f'Since the user selected manual mode, ALWAYS rewrite the message in a {request.tone} tone regardless of whether it is harsh or not. Set needs_rewrite to true.'
     else:
-        rewrite_instruction = f'Sensitivity rule: {sensitivity_instruction}. When in doubt, flag it and rewrite it. It is better to suggest a rewrite than to miss a potentially hurtful message.'
+        rewrite_instruction = f'Sensitivity rule: {sensitivity_instruction}. Important: Do NOT flag messages that are positive, kind, friendly, complimentary, or neutral. Only flag genuinely problematic messages.'
 
     prompt = f"""You are ToneEase, an AI assistant that helps people communicate better by detecting harsh or rude messages and rewriting them professionally.
 
@@ -120,9 +120,12 @@ Message: "{text}"
 Instructions:
 1. Decide if this message needs rewriting (needs_rewrite: true or false)
    - {rewrite_instruction}
+   - Messages like compliments, appreciation, love, encouragement, greetings, and friendly chat should NEVER be flagged.
+   - Examples of messages that should NOT be flagged: "you are so precious", "great job!", "thank you so much", "I love this", "have a nice day", "you're amazing"
+   - Examples of messages that SHOULD be flagged: "you're useless", "this is garbage", "shut up", "nobody asked you", "do your job properly"
 2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. Do NOT include any emojis.
 3. If needs_rewrite is false: set suggestion to null.
-4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite")
+4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite", "friendly", "positive")
 
 Respond with this exact JSON only:
 {{
@@ -135,7 +138,7 @@ Respond with this exact JSON only:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": "You are a strict tone detection bot that responds only in JSON. You flag any message that could hurt, offend, or upset someone. When in doubt, always flag and rewrite. Never output anything except valid JSON."},
+                {"role": "system", "content": "You are a tone detection bot that responds only in JSON. You help identify genuinely harsh or rude messages. You do NOT flag positive, kind, friendly, or neutral messages. Never output anything except valid JSON."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,
