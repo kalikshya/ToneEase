@@ -25,6 +25,37 @@ const PLATFORM_SELECTORS = {
         'div[contenteditable="true"][role="textbox"]',
         'textarea[placeholder="Message..."]',
         'div[aria-label="Message"][contenteditable="true"]'
+    ],
+    gmail: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div[aria-label="Message Body"][contenteditable="true"]',
+        'div.Am.Al.editable[contenteditable="true"]'
+    ],
+    twitter: [
+        'div[contenteditable="true"][data-testid="tweetTextarea_0"]',
+        'div[contenteditable="true"][role="textbox"]'
+    ],
+    linkedin: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div.msg-form__contenteditable[contenteditable="true"]',
+        'div.ql-editor[contenteditable="true"]'
+    ],
+    discord: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div[data-slate-editor="true"]'
+    ],
+    slack: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div.ql-editor[contenteditable="true"]'
+    ],
+    reddit: [
+        'div[contenteditable="true"]',
+        'textarea[placeholder="What are your thoughts?"]',
+        'div[data-testid="comment-submission-form-richtext"] div[contenteditable="true"]'
+    ],
+    youtube: [
+        'div#contenteditable-root[contenteditable="true"]',
+        'yt-formatted-string[contenteditable="true"]'
     ]
 };
 
@@ -37,6 +68,13 @@ function detectPlatform() {
     if (url.includes("web.whatsapp.com")) return "whatsapp";
     if (url.includes("facebook.com") || url.includes("messenger.com")) return "facebook";
     if (url.includes("instagram.com")) return "instagram";
+    if (url.includes("mail.google.com")) return "gmail";
+    if (url.includes("twitter.com") || url.includes("x.com")) return "twitter";
+    if (url.includes("linkedin.com")) return "linkedin";
+    if (url.includes("discord.com")) return "discord";
+    if (url.includes("slack.com")) return "slack";
+    if (url.includes("reddit.com")) return "reddit";
+    if (url.includes("youtube.com")) return "youtube";
     return null;
 }
 
@@ -65,19 +103,11 @@ async function setTextInInput(input, text) {
             input.focus();
             setTimeout(async () => {
                 try {
-                    // Write to clipboard first
                     await navigator.clipboard.writeText(text);
-                    
                     await new Promise(r => setTimeout(r, 50));
-                    
-                    // Select all text
                     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                    
                     await new Promise(r => setTimeout(r, 50));
-                    
-                    // Paste from clipboard
                     document.execCommand('paste');
-                    
                 } catch (err) {
                     console.error("Failed:", err);
                 }
@@ -89,6 +119,7 @@ async function setTextInInput(input, text) {
         isAccepting = false;
     }
 }
+
 // ============================================
 // REMOVE SUGGESTION BOX
 // ============================================
@@ -110,9 +141,14 @@ function createSuggestionBox(suggestion, input) {
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
+    const spaceAbove = rect.top;
+    const topPos = spaceAbove > 180
+        ? rect.top + scrollY - 170
+        : rect.bottom + scrollY + 8;
+
     box.style.cssText = `
         position: absolute;
-        top: ${rect.top + scrollY - 170}px;
+        top: ${topPos}px;
         left: ${rect.left + scrollX}px;
         z-index: 999999;
         background: #FFF8F0;
@@ -170,22 +206,26 @@ function createSuggestionBox(suggestion, input) {
 // ============================================
 function saveFeedback(action) {
     if (!window.toneEaseCurrentHistoryId) return;
-    chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
-        try {
-            await fetch(`${API_URL}/feedback`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    history_id: window.toneEaseCurrentHistoryId,
-                    action: action,
-                    user_id: response?.user_id || null,
-                    session_id: response?.session_id || null
-                })
-            });
-        } catch (e) {
-            console.error("ToneEase feedback error:", e);
-        }
-    });
+    try {
+        chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
+            try {
+                await fetch(`${API_URL}/feedback`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        history_id: window.toneEaseCurrentHistoryId,
+                        action: action,
+                        user_id: response?.user_id || null,
+                        session_id: response?.session_id || null
+                    })
+                });
+            } catch (e) {
+                console.error("ToneEase feedback error:", e);
+            }
+        });
+    } catch (e) {
+        console.error("ToneEase runtime error:", e);
+    }
 }
 
 // ============================================
@@ -195,18 +235,34 @@ function analyzeText(text, input) {
     if (!text || text.trim().length < 3) return;
     if (isAccepting) return;
 
-    chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
-        if (chrome.runtime.lastError) {
+    // Check if ToneEase is enabled
+    chrome.storage.local.get(["toneease_enabled"], (data) => {
+        if (data.toneease_enabled === false) return;
+
+        try {
+            chrome.runtime.sendMessage({ type: "GET_USER_STATE" }, async (response) => {
+                if (chrome.runtime.lastError) {
+                    doAnalyze(text, input, null, null);
+                    return;
+                }
+                doAnalyze(text, input, response?.user_id || null, response?.session_id || null);
+            });
+        } catch (e) {
             doAnalyze(text, input, null, null);
-            return;
         }
-        doAnalyze(text, input, response?.user_id || null, response?.session_id || null);
     });
 }
 
 async function doAnalyze(text, input, userId, sessionId) {
     if (isAccepting) return;
     try {
+        // Read sensitivity from storage
+        const sensitivity = await new Promise((resolve) => {
+            chrome.storage.local.get(["toneease_sensitivity"], (data) => {
+                resolve(data.toneease_sensitivity || "medium");
+            });
+        });
+
         const res = await fetch(`${API_URL}/analyze`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -214,7 +270,7 @@ async function doAnalyze(text, input, userId, sessionId) {
                 text: text.trim(),
                 mode: "auto",
                 tone: "polite",
-                sensitivity: "medium",
+                sensitivity: sensitivity,
                 session_id: sessionId,
                 user_id: userId
             })

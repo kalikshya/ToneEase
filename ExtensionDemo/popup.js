@@ -118,7 +118,7 @@ async function analyzeText(text) {
         const tone = toneSelect ? toneSelect.value : "polite";
         const sensitivity = getSensitivityLevel();
         // Fallback if session not loaded yet
-if (!currentSessionId) currentSessionId = generateSessionId();
+        if (!currentSessionId) currentSessionId = generateSessionId();
 
         const response = await fetch(`${API_URL}/analyze`, {
             method: "POST",
@@ -285,10 +285,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (sensitivitySlider) {
+        // Load saved sensitivity
+        chrome.storage.local.get(["toneease_sensitivity"], (data) => {
+            if (data.toneease_sensitivity) {
+                const map = { low: 15, medium: 50, high: 85 };
+                sensitivitySlider.value = map[data.toneease_sensitivity] || 50;
+            }
+        });
+
         sensitivitySlider.addEventListener("input", () => {
-            console.log("Sensitivity:", getSensitivityLevel());
+            const level = getSensitivityLevel();
+            chrome.storage.local.set({ toneease_sensitivity: level });
+            console.log("Sensitivity saved:", level);
         });
     }
 
-    console.log("ToneEase ready!");
 });
