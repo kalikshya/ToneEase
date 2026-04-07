@@ -137,6 +137,54 @@ function removeTonePicker() {
 }
 
 // ============================================
+// SHOW/HIDE LOADING INDICATOR
+// ============================================
+function showLoading(input) {
+    hideLoading();
+    const loader = document.createElement("div");
+    loader.id = "toneease-loading";
+
+    const rect = input.getBoundingClientRect();
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
+    loader.style.cssText = `
+        position: absolute;
+        top: ${rect.top + scrollY - 30}px;
+        left: ${rect.left + scrollX}px;
+        z-index: 999999;
+        background: #4B2E2B;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        animation: toneeasePulse 1.2s infinite;
+    `;
+    loader.textContent = "Analyzing tone...";
+
+    if (!document.getElementById("toneease-style")) {
+        const style = document.createElement("style");
+        style.id = "toneease-style";
+        style.textContent = `
+            @keyframes toneeasePulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(loader);
+}
+
+function hideLoading() {
+    const existing = document.getElementById("toneease-loading");
+    if (existing) existing.remove();
+}
+
+// ============================================
 // CREATE SUGGESTION BOX
 // ============================================
 function createSuggestionBox(suggestion, input) {
@@ -172,8 +220,8 @@ function createSuggestionBox(suggestion, input) {
 
     box.innerHTML = `
         <div style="display:flex; align-items:center; margin-bottom:8px;">
-            <span style="color:#4B2E2B; font-weight:600; font-size:12px;">✨ ToneEase Suggestion</span>
-            <button id="toneease-close" style="margin-left:auto; background:none; border:none; cursor:pointer; color:#8C5A3C; font-size:18px; line-height:1;">×</button>
+            <span style="color:#4B2E2B; font-weight:600; font-size:12px;">ToneEase Suggestion</span>
+            <button id="toneease-close" style="margin-left:auto; background:none; border:none; cursor:pointer; color:#8C5A3C; font-size:18px; line-height:1;">x</button>
         </div>
         <div style="color:#8C5A3C; font-size:12px; margin-bottom:10px; line-height:1.5;">
             <strong style="color:#4B2E2B;">Rewritten:</strong> ${suggestion}
@@ -218,8 +266,8 @@ function createManualIcon(input) {
 
     const icon = document.createElement("div");
     icon.className = "toneease-manual-icon";
-    icon.innerHTML = "✏️";
-    icon.title = "ToneEase — Rewrite in your preferred tone";
+    icon.innerHTML = "&#9999;&#65039;";
+    icon.title = "ToneEase - Rewrite in your preferred tone";
     icon.style.cssText = `
         position: absolute;
         z-index: 999998;
@@ -290,20 +338,16 @@ function showTonePicker(input, iconEl) {
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
-    // Check if there's enough space below, otherwise open upward
     const spaceBelow = window.innerHeight - iconRect.bottom;
     const pickerHeight = 220;
 
     let topPos;
     if (spaceBelow < pickerHeight) {
-        // Open upward
-        topPos = iconRect.top + scrollY - pickerHeight - 6;
+        topPos = iconRect.top + scrollY - pickerHeight + 30;
     } else {
-        // Open downward
         topPos = iconRect.bottom + scrollY + 6;
     }
 
-    // Also make sure left position doesn't go off-screen
     let leftPos = iconRect.left + scrollX - 120;
     if (leftPos < 10) leftPos = 10;
 
@@ -322,16 +366,16 @@ function showTonePicker(input, iconEl) {
     `;
 
     const tones = [
-        { value: "polite", label: "Polite", emoji: "🤝" },
-        { value: "kind", label: "Kind", emoji: "💛" },
-        { value: "friendly", label: "Friendly", emoji: "😊" },
-        { value: "professional", label: "Professional", emoji: "💼" },
-        { value: "confident", label: "Confident", emoji: "💪" }
+        { value: "polite", label: "Polite", emoji: "&#129309;" },
+        { value: "kind", label: "Kind", emoji: "&#128155;" },
+        { value: "friendly", label: "Friendly", emoji: "&#128522;" },
+        { value: "professional", label: "Professional", emoji: "&#128188;" },
+        { value: "confident", label: "Confident", emoji: "&#128170;" }
     ];
 
     picker.innerHTML = `
         <div style="padding: 4px 14px 8px; color:#4B2E2B; font-weight:600; font-size:12px; border-bottom: 1px solid #E3DBBB; margin-bottom: 4px;">
-            ✨ Rewrite as...
+            Rewrite as...
         </div>
     `;
 
@@ -362,7 +406,7 @@ function showTonePicker(input, iconEl) {
             removeTonePicker();
 
             const originalIcon = iconEl.innerHTML;
-            iconEl.innerHTML = "⏳";
+            iconEl.innerHTML = "&#9203;";
 
             try {
                 await doManualRewrite(text, input, tone.value);
@@ -426,6 +470,7 @@ function showFloatingStatus(message, input) {
 // ============================================
 async function doManualRewrite(text, input, tone) {
     if (isAccepting) return;
+    showLoading(input);
 
     try {
         let userId = null;
@@ -470,6 +515,8 @@ async function doManualRewrite(text, input, tone) {
     } catch (e) {
         console.error("ToneEase manual rewrite error:", e);
     }
+
+    hideLoading();
 }
 
 // ============================================
@@ -535,6 +582,8 @@ function analyzeText(text, input) {
 
 async function doAnalyze(text, input, userId, sessionId) {
     if (isAccepting) return;
+    showLoading(input);
+
     try {
         const settings = await new Promise((resolve) => {
             chrome.storage.local.get(["toneease_tone", "toneease_sensitivity"], (data) => {
@@ -568,6 +617,8 @@ async function doAnalyze(text, input, userId, sessionId) {
     } catch (e) {
         console.error("ToneEase analyze error:", e);
     }
+
+    hideLoading();
 }
 
 // ============================================
