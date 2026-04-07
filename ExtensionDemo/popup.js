@@ -74,11 +74,42 @@ if (logoutBtn) logoutBtn.addEventListener("click", () => {
 });
 
 // ============================================
-// MANUAL MODE TOGGLE
+// AUTO / MANUAL MODE TOGGLES (linked)
 // ============================================
+if (autoToggle) {
+    autoToggle.addEventListener("change", () => {
+        if (autoToggle.checked) {
+            manualToggle.checked = false;
+            toneBox.classList.add("hidden");
+            chrome.storage.local.set({ toneease_mode: "auto" });
+        } else {
+            // Don't allow both off — switch to manual
+            manualToggle.checked = true;
+            toneBox.classList.remove("hidden");
+            chrome.storage.local.set({ toneease_mode: "manual" });
+        }
+    });
+}
+
 if (manualToggle) {
     manualToggle.addEventListener("change", () => {
-        toneBox.classList.toggle("hidden", !manualToggle.checked);
+        if (manualToggle.checked) {
+            autoToggle.checked = false;
+            toneBox.classList.remove("hidden");
+            chrome.storage.local.set({ toneease_mode: "manual" });
+        } else {
+            // Don't allow both off — switch to auto
+            autoToggle.checked = true;
+            toneBox.classList.add("hidden");
+            chrome.storage.local.set({ toneease_mode: "auto" });
+        }
+    });
+}
+
+// Save tone selection
+if (toneSelect) {
+    toneSelect.addEventListener("change", () => {
+        chrome.storage.local.set({ toneease_tone: toneSelect.value });
     });
 }
 
@@ -246,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initUserState();
 
-    // Load saved toggle state
+    // Load saved master toggle state
     chrome.storage.local.get(["toneease_enabled"], (data) => {
         const masterToggle = document.getElementById("masterToggle");
         if (masterToggle) {
@@ -254,11 +285,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Save toggle state when changed
+    // Save master toggle state when changed
     const masterToggle = document.getElementById("masterToggle");
     if (masterToggle) {
         masterToggle.addEventListener("change", () => {
             chrome.storage.local.set({ toneease_enabled: masterToggle.checked });
+        });
+    }
+
+    // Load saved mode and tone
+    chrome.storage.local.get(["toneease_mode", "toneease_tone"], (data) => {
+        const mode = data.toneease_mode || "auto";
+        if (mode === "manual") {
+            autoToggle.checked = false;
+            manualToggle.checked = true;
+            toneBox.classList.remove("hidden");
+        } else {
+            autoToggle.checked = true;
+            manualToggle.checked = false;
+            toneBox.classList.add("hidden");
+        }
+        if (data.toneease_tone && toneSelect) {
+            toneSelect.value = data.toneease_tone;
+        }
+    });
+
+    // Test mode toggle — show/hide test section
+    const testModeToggle = document.getElementById("testModeToggle");
+    const testSection = document.getElementById("testSection");
+    if (testModeToggle && testSection) {
+        testModeToggle.addEventListener("change", () => {
+            testSection.classList.toggle("hidden", !testModeToggle.checked);
         });
     }
 

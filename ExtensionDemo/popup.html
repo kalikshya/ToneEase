@@ -51,7 +51,7 @@
             </label>
         </div>
 
-        <!-- PREFERRED TONE (Hidden by default) -->
+        <!-- PREFERRED TONE (Hidden by default, shows when manual is on) -->
         <div class="section hidden" id="toneSelectBox">
             <label>Preferred Tone</label>
             <select id="toneSelect">
@@ -83,8 +83,16 @@
             <span>High</span>
         </div>
 
-        <!-- Test Input Section -->
-        <div id="testSection" class="test-section">
+        <!-- Test Mode (collapsible) -->
+        <div class="section test-toggle-section">
+            <span>Test Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="testModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="testSection" class="test-section hidden">
             <label class="test-label">Test Message:</label>
             <textarea
                 id="testInput"

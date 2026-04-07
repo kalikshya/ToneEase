@@ -256,10 +256,14 @@ function analyzeText(text, input) {
 async function doAnalyze(text, input, userId, sessionId) {
     if (isAccepting) return;
     try {
-        // Read sensitivity from storage
-        const sensitivity = await new Promise((resolve) => {
-            chrome.storage.local.get(["toneease_sensitivity"], (data) => {
-                resolve(data.toneease_sensitivity || "medium");
+        // Read mode, tone, and sensitivity from storage
+        const settings = await new Promise((resolve) => {
+            chrome.storage.local.get(["toneease_mode", "toneease_tone", "toneease_sensitivity"], (data) => {
+                resolve({
+                    mode: data.toneease_mode || "auto",
+                    tone: data.toneease_tone || "polite",
+                    sensitivity: data.toneease_sensitivity || "medium"
+                });
             });
         });
 
@@ -268,9 +272,9 @@ async function doAnalyze(text, input, userId, sessionId) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 text: text.trim(),
-                mode: "auto",
-                tone: "polite",
-                sensitivity: sensitivity,
+                mode: settings.mode,
+                tone: settings.tone,
+                sensitivity: settings.sensitivity,
                 session_id: sessionId,
                 user_id: userId
             })
