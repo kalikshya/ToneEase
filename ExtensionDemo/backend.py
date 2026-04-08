@@ -123,7 +123,7 @@ Instructions:
    - Messages like compliments, appreciation, love, encouragement, greetings, and friendly chat should NEVER be flagged.
    - Examples of messages that should NOT be flagged: "you are so precious", "great job!", "thank you so much", "I love this", "have a nice day", "you're amazing"
    - Examples of messages that SHOULD be flagged: "you're useless", "this is garbage", "shut up", "nobody asked you", "do your job properly"
-2. If needs_rewrite is true: rewrite the message to sound {request.tone} and professional. Keep the same meaning. Do NOT include any emojis.
+2. If needs_rewrite is true: rewrite the message to sound {request.tone} . Keep the EXACT same meaning and intent from the SAME person's perspective. Do NOT flip who is speaking. Do NOT change the subject of the sentence. Do NOT include any emojis.
 3. If needs_rewrite is false: set suggestion to null.
 4. Detect the tone of the original message in 1-2 words (e.g. "frustrated", "sarcastic", "angry", "passive-aggressive", "neutral", "polite", "friendly", "positive")
 
