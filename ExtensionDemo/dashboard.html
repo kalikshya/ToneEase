@@ -26,7 +26,7 @@
         <div class="nav-item" data-target="about"><span class="nav-dot"></span> About</div>
 
         <div class="sidebar-bottom">
-            <div class="user-chip">
+            <div class="user-chip" id="userChip" style="cursor:pointer;" title="Click to sign in">
                 <div class="avatar" id="sidebarAvatar">?</div>
                 <div>
                     <div class="user-name" id="sidebarUsername">Guest</div>
@@ -70,15 +70,15 @@
                     <div class="settings-card-body">
                         <div class="row-setting">
                             <div><div class="row-label">Automatic mode</div><div class="row-sub">Detects tone issues as you type</div></div>
-                            <span class="badge badge-green">Enabled</span>
+                            <span class="badge badge-green" id="cfgAutoMode">Enabled</span>
                         </div>
                         <div class="row-setting">
                             <div><div class="row-label">Manual mode</div><div class="row-sub">Choose tone before rewriting</div></div>
-                            <span class="badge badge-gray">Disabled</span>
+                            <span class="badge badge-gray" id="cfgManualMode">Disabled</span>
                         </div>
                         <div class="row-setting">
                             <div><div class="row-label">Sensitivity level</div><div class="row-sub">How strictly messages are flagged</div></div>
-                            <span class="badge badge-amber">Medium</span>
+                            <span class="badge badge-amber" id="cfgSensitivity">Medium</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
                 <p class="history-status" id="historyStatus"></p>
                 <div id="historyContainer">
                     <div class="history-empty">
-                        <div class="history-empty-icon">📭</div>
+                        <div class="history-empty-icon">&#128237;</div>
                         <p>Loading history...</p>
                     </div>
                 </div>
@@ -222,7 +222,7 @@
                     </div>
                     <div class="about-hero-text">
                         <div class="about-title">ToneEase</div>
-                        <div class="about-version">Version 1.0 · Chrome Extension</div>
+                        <div class="about-version">Version 1.0 - Chrome Extension</div>
                         <div class="about-desc">AI-powered tone detection for better communication</div>
                     </div>
                 </div>
@@ -239,7 +239,7 @@
 
                 <div class="info-card">
                     <h4>Supported platforms</h4>
-                    <p>WhatsApp Web, Facebook Messenger, Instagram Direct, and any text input via the extension popup.</p>
+                    <p>WhatsApp Web, Facebook Messenger, Instagram Direct, Gmail, Twitter/X, LinkedIn, Discord, Slack, Reddit, YouTube, and any text input via the extension popup.</p>
                 </div>
             </div>
         </div>
