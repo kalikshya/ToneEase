@@ -297,6 +297,13 @@ function createManualIcon(input) {
     positionIcon();
     document.body.appendChild(icon);
 
+    // Hide icon if ToneEase is disabled
+    chrome.storage.local.get(["toneease_enabled"], (data) => {
+        if (data.toneease_enabled === false) {
+            icon.style.display = "none";
+        }
+    });
+
     const repositionHandler = () => positionIcon();
     window.addEventListener("scroll", repositionHandler, true);
     window.addEventListener("resize", repositionHandler);
@@ -661,6 +668,23 @@ function findAndAttachInputs() {
         document.querySelectorAll(selector).forEach(input => attachToInput(input));
     });
 }
+
+// ============================================
+// LISTEN FOR TOGGLE CHANGES
+// ============================================
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.toneease_enabled) {
+        const enabled = changes.toneease_enabled.newValue;
+        document.querySelectorAll(".toneease-manual-icon").forEach(icon => {
+            icon.style.display = enabled === false ? "none" : "flex";
+        });
+        if (enabled === false) {
+            removeSuggestionBox();
+            removeTonePicker();
+            hideLoading();
+        }
+    }
+});
 
 // ============================================
 // OBSERVE DOM
