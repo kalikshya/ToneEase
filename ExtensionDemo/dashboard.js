@@ -40,19 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearBtn = document.getElementById("clearHistoryBtn");
     if (clearBtn) clearBtn.addEventListener("click", clearHistory);
 
-    // Sign out button
-    const signoutBtn = document.getElementById("signoutBtn");
-    if (signoutBtn) {
-        signoutBtn.addEventListener("click", () => {
-            chrome.storage.local.set({
-                user_id: null, username: null, email: null, is_logged_in: false
-            }, () => {
-                loadUserInfo();
-                loadStatsOnStart();
-            });
-        });
-    }
-
     // Profile icon click — open login if not signed in
     const userChip = document.getElementById("userChip");
     if (userChip) {
@@ -115,6 +102,27 @@ function loadUserInfo() {
         const userChip = document.getElementById("userChip");
         if (userChip) {
             userChip.title = username === "Guest" ? "Click to sign in" : "Click to view preferences";
+        }
+
+        // Update sign out/sign in button based on login state
+        const signoutBtn = document.getElementById("signoutBtn");
+        if (signoutBtn) {
+            if (username === "Guest") {
+                signoutBtn.textContent = "Sign in";
+                signoutBtn.onclick = () => {
+                    chrome.tabs.create({ url: "login.html" });
+                };
+            } else {
+                signoutBtn.textContent = "Sign out";
+                signoutBtn.onclick = () => {
+                    chrome.storage.local.set({
+                        user_id: null, username: null, email: null, is_logged_in: false
+                    }, () => {
+                        loadUserInfo();
+                        loadStatsOnStart();
+                    });
+                };
+            }
         }
     });
 }
