@@ -275,6 +275,7 @@ async def link_session(request: LinkSessionRequest):
         cursor = conn.cursor()
         cursor.execute("UPDATE sessions SET user_id = %s WHERE session_id = %s", (request.user_id, request.session_id))
         cursor.execute("UPDATE history SET user_id = %s WHERE session_id = %s AND user_id IS NULL", (request.user_id, request.session_id))
+        cursor.execute("UPDATE feedback SET user_id = %s WHERE session_id = %s AND user_id IS NULL", (request.user_id, request.session_id))
         conn.commit()
         return {"status": "success", "message": "Previous history linked to your account!"}
     except Exception as e:
