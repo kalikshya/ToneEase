@@ -42,7 +42,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT — original clipboard method
+// SET TEXT IN INPUT — clipboard method
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -589,14 +589,43 @@ async function doAnalyze(text, input, userId, sessionId) {
 }
 
 // ============================================
+// CHECK IF INPUT IS A MESSAGE/COMMENT BOX
+// ============================================
+function isMessageInput(input) {
+    // Skip tiny inputs
+    const rect = input.getBoundingClientRect();
+    if (rect.width < 50 || rect.height < 20) return false;
+
+    // Skip inputs inside search, nav, header areas
+    const parent = input.closest('header, nav, [role="search"], [role="banner"], [aria-label="Search"]');
+    if (parent) return false;
+
+    // Skip if input has search-related attributes
+    const ariaLabel = (input.getAttribute('aria-label') || '').toLowerCase();
+    const placeholder = (input.getAttribute('placeholder') || input.getAttribute('aria-placeholder') || '').toLowerCase();
+    const role = (input.getAttribute('role') || '').toLowerCase();
+    const type = (input.getAttribute('type') || '').toLowerCase();
+
+    if (ariaLabel.includes('search') || placeholder.includes('search') || role === 'search') return false;
+    if (ariaLabel.includes('find') || placeholder.includes('find')) return false;
+    if (type === 'search' || type === 'password' || type === 'email' || type === 'number') return false;
+
+    // Skip login/signup form inputs
+    if (placeholder.includes('username') || placeholder.includes('password') || placeholder.includes('email')) return false;
+    if (ariaLabel.includes('username') || ariaLabel.includes('password') || ariaLabel.includes('email')) return false;
+
+    // Skip URL bars and address inputs
+    if (placeholder.includes('url') || placeholder.includes('address') || ariaLabel.includes('url')) return false;
+
+    return true;
+}
+
+// ============================================
 // ATTACH TO INPUT
 // ============================================
 function attachToInput(input) {
     if (input.dataset.toneEaseAttached) return;
-
-    // Skip tiny inputs (like search bars, hidden inputs)
-    const rect = input.getBoundingClientRect();
-    if (rect.width < 50 || rect.height < 20) return;
+    if (!isMessageInput(input)) return;
 
     input.dataset.toneEaseAttached = "true";
 
