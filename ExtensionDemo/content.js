@@ -4,7 +4,7 @@ const API_URL = "https://kalikshya-toneease-backend.hf.space";
 let isAccepting = false;
 
 // ============================================
-// UNIVERSAL SELECTORS - works on ANY website
+// UNIVERSAL SELECTORS — works on ANY website
 // ============================================
 const UNIVERSAL_SELECTORS = [
     'div[contenteditable="true"]',
@@ -42,7 +42,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT — universal method
+// SET TEXT IN INPUT — original clipboard method
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -56,27 +56,20 @@ async function setTextInInput(input, text) {
             input.focus();
             setTimeout(async () => {
                 try {
-                    // Method 1: Select all and insertText (works on most platforms)
-                    const selection = window.getSelection();
-                    const range = document.createRange();
-                    range.selectNodeContents(input);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    document.execCommand('delete');
-                    document.execCommand('insertText', false, text);
+                    await navigator.clipboard.writeText(text);
+                    await new Promise(r => setTimeout(r, 50));
+                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
+                    await new Promise(r => setTimeout(r, 50));
+                    document.execCommand('selectAll');
+                    await new Promise(r => setTimeout(r, 50));
+                    document.execCommand('paste');
                 } catch (err) {
+                    console.error("ToneEase paste failed:", err);
                     try {
-                        // Method 2: Clipboard paste fallback
-                        await navigator.clipboard.writeText(text);
-                        await new Promise(r => setTimeout(r, 50));
-                        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                        await new Promise(r => setTimeout(r, 50));
-                        document.execCommand('paste');
-                    } catch (e) {
-                        // Method 3: Direct content replacement
-                        input.innerHTML = '';
                         input.textContent = text;
                         input.dispatchEvent(new Event('input', { bubbles: true }));
+                    } catch (e) {
+                        console.error("ToneEase fallback failed:", e);
                     }
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
