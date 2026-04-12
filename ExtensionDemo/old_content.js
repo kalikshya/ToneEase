@@ -54,23 +54,23 @@ async function setTextInInput(input, text) {
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
             input.focus();
-            setTimeout(() => {
-                try {
-                    // Method 1: Clear content then insert
-                    input.innerHTML = '';
-                    input.focus();
-                    document.execCommand('insertText', false, text);
-                } catch (err) {
-                    try {
-                        // Method 2: Direct content replacement
-                        input.textContent = text;
-                        input.dispatchEvent(new Event('input', { bubbles: true }));
-                    } catch (e) {
-                        console.error("ToneEase: All text replacement methods failed", e);
-                    }
-                }
-                setTimeout(() => { isAccepting = false; }, 2000);
-            }, 100);
+            await new Promise(r => setTimeout(r, 100));
+
+            // Select all text in the input
+            document.execCommand('selectAll');
+            await new Promise(r => setTimeout(r, 50));
+
+            // Delete selected text
+            document.execCommand('delete');
+            await new Promise(r => setTimeout(r, 50));
+
+            // Insert new text
+            document.execCommand('insertText', false, text);
+
+            // Trigger input event so platform detects the change
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+
+            setTimeout(() => { isAccepting = false; }, 2000);
         }
     } catch (e) {
         console.error("ToneEase setTextInInput error:", e);
