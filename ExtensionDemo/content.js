@@ -1,19 +1,66 @@
-// ToneEase Content Script — Universal Platform Support
+// ToneEase Content Script
 const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
 let isAccepting = false;
 
 // ============================================
-// UNIVERSAL SELECTORS — works on ANY website
+// PLATFORM SELECTORS
 // ============================================
-const UNIVERSAL_SELECTORS = [
-    'div[contenteditable="true"]',
-    'textarea',
-    'input[type="text"]'
-];
+const PLATFORM_SELECTORS = {
+    test: [
+        '#toneease-test-input',
+        'textarea'
+    ],
+    whatsapp: [
+        'div[contenteditable="true"][data-tab="10"]',
+        'div[contenteditable="true"][data-tab="1"]',
+        'footer div[contenteditable="true"]'
+    ],
+    facebook: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div[aria-label="Message"][contenteditable="true"]',
+        'div[aria-placeholder="Aa"][contenteditable="true"]'
+    ],
+    instagram: [
+        'div[contenteditable="true"][role="textbox"]',
+        'textarea[placeholder="Message..."]',
+        'div[aria-label="Message"][contenteditable="true"]'
+    ],
+    gmail: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div[aria-label="Message Body"][contenteditable="true"]',
+        'div.Am.Al.editable[contenteditable="true"]'
+    ],
+    twitter: [
+        'div[contenteditable="true"][data-testid="tweetTextarea_0"]',
+        'div[contenteditable="true"][role="textbox"]'
+    ],
+    linkedin: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div.msg-form__contenteditable[contenteditable="true"]',
+        'div.ql-editor[contenteditable="true"]'
+    ],
+    discord: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div[data-slate-editor="true"]'
+    ],
+    slack: [
+        'div[contenteditable="true"][role="textbox"]',
+        'div.ql-editor[contenteditable="true"]'
+    ],
+    reddit: [
+        'div[contenteditable="true"]',
+        'textarea[placeholder="What are your thoughts?"]',
+        'div[data-testid="comment-submission-form-richtext"] div[contenteditable="true"]'
+    ],
+    youtube: [
+        'div#contenteditable-root[contenteditable="true"]',
+        'yt-formatted-string[contenteditable="true"]'
+    ]
+};
 
 // ============================================
-// DETECT PLATFORM (for logging only)
+// DETECT PLATFORM
 // ============================================
 function detectPlatform() {
     const url = window.location.href;
@@ -28,7 +75,7 @@ function detectPlatform() {
     if (url.includes("slack.com")) return "slack";
     if (url.includes("reddit.com")) return "reddit";
     if (url.includes("youtube.com")) return "youtube";
-    return "other";
+    return null;
 }
 
 // ============================================
@@ -42,7 +89,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT — universal method
+// SET TEXT IN INPUT
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -54,23 +101,18 @@ async function setTextInInput(input, text) {
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
             input.focus();
-            await new Promise(r => setTimeout(r, 100));
-
-            // Select all text in the input
-            document.execCommand('selectAll');
-            await new Promise(r => setTimeout(r, 50));
-
-            // Delete selected text
-            document.execCommand('delete');
-            await new Promise(r => setTimeout(r, 50));
-
-            // Insert new text
-            document.execCommand('insertText', false, text);
-
-            // Trigger input event so platform detects the change
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-
-            setTimeout(() => { isAccepting = false; }, 2000);
+            setTimeout(async () => {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    await new Promise(r => setTimeout(r, 50));
+                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
+                    await new Promise(r => setTimeout(r, 50));
+                    document.execCommand('paste');
+                } catch (err) {
+                    console.error("Failed:", err);
+                }
+                setTimeout(() => { isAccepting = false; }, 2000);
+            }, 100);
         }
     } catch (e) {
         console.error("ToneEase setTextInInput error:", e);
@@ -255,6 +297,7 @@ function createManualIcon(input) {
     positionIcon();
     document.body.appendChild(icon);
 
+    // Hide icon if ToneEase is disabled
     chrome.storage.local.get(["toneease_enabled"], (data) => {
         if (data.toneease_enabled === false) {
             icon.style.display = "none";
@@ -590,11 +633,6 @@ async function doAnalyze(text, input, userId, sessionId) {
 // ============================================
 function attachToInput(input) {
     if (input.dataset.toneEaseAttached) return;
-
-    // Skip tiny inputs (like search bars, hidden inputs)
-    const rect = input.getBoundingClientRect();
-    if (rect.width < 50 || rect.height < 20) return;
-
     input.dataset.toneEaseAttached = "true";
 
     createManualIcon(input);
@@ -618,10 +656,15 @@ function attachToInput(input) {
 }
 
 // ============================================
-// FIND AND ATTACH TO ALL INPUTS (universal)
+// FIND AND ATTACH TO ALL INPUTS
 // ============================================
 function findAndAttachInputs() {
-    UNIVERSAL_SELECTORS.forEach(selector => {
+    const platform = detectPlatform();
+    if (!platform) return;
+
+    const selectors = PLATFORM_SELECTORS[platform];
+    if (!selectors) return;
+    selectors.forEach(selector => {
         document.querySelectorAll(selector).forEach(input => attachToInput(input));
     });
 }
