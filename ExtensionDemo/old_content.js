@@ -4,7 +4,7 @@ const API_URL = "https://kalikshya-toneease-backend.hf.space";
 let isAccepting = false;
 
 // ============================================
-// UNIVERSAL SELECTORS - works on ANY website
+// UNIVERSAL SELECTORS — works on ANY website
 // ============================================
 const UNIVERSAL_SELECTORS = [
     'div[contenteditable="true"]',
@@ -54,29 +54,19 @@ async function setTextInInput(input, text) {
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
             input.focus();
-            setTimeout(async () => {
+            setTimeout(() => {
                 try {
-                    // Method 1: Select all and insertText (works on most platforms)
-                    const selection = window.getSelection();
-                    const range = document.createRange();
-                    range.selectNodeContents(input);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    document.execCommand('delete');
+                    // Method 1: Clear content then insert
+                    input.innerHTML = '';
+                    input.focus();
                     document.execCommand('insertText', false, text);
                 } catch (err) {
                     try {
-                        // Method 2: Clipboard paste fallback
-                        await navigator.clipboard.writeText(text);
-                        await new Promise(r => setTimeout(r, 50));
-                        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                        await new Promise(r => setTimeout(r, 50));
-                        document.execCommand('paste');
-                    } catch (e) {
-                        // Method 3: Direct content replacement
-                        input.innerHTML = '';
+                        // Method 2: Direct content replacement
                         input.textContent = text;
                         input.dispatchEvent(new Event('input', { bubbles: true }));
+                    } catch (e) {
+                        console.error("ToneEase: All text replacement methods failed", e);
                     }
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
