@@ -42,7 +42,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT — clipboard method
+// SET TEXT IN INPUT — universal method
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -54,26 +54,23 @@ async function setTextInInput(input, text) {
             setTimeout(() => { isAccepting = false; }, 2000);
         } else {
             input.focus();
-            setTimeout(async () => {
-                try {
-                    await navigator.clipboard.writeText(text);
-                    await new Promise(r => setTimeout(r, 50));
-                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                    await new Promise(r => setTimeout(r, 50));
-                    document.execCommand('selectAll');
-                    await new Promise(r => setTimeout(r, 50));
-                    document.execCommand('paste');
-                } catch (err) {
-                    console.error("ToneEase paste failed:", err);
-                    try {
-                        input.textContent = text;
-                        input.dispatchEvent(new Event('input', { bubbles: true }));
-                    } catch (e) {
-                        console.error("ToneEase fallback failed:", e);
-                    }
-                }
-                setTimeout(() => { isAccepting = false; }, 2000);
-            }, 100);
+            await new Promise(r => setTimeout(r, 100));
+
+            // Select all text in the input
+            document.execCommand('selectAll');
+            await new Promise(r => setTimeout(r, 50));
+
+            // Delete selected text
+            document.execCommand('delete');
+            await new Promise(r => setTimeout(r, 50));
+
+            // Insert new text
+            document.execCommand('insertText', false, text);
+
+            // Trigger input event so platform detects the change
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+
+            setTimeout(() => { isAccepting = false; }, 2000);
         }
     } catch (e) {
         console.error("ToneEase setTextInInput error:", e);
@@ -589,32 +586,14 @@ async function doAnalyze(text, input, userId, sessionId) {
 }
 
 // ============================================
-// CHECK IF INPUT IS A MESSAGE/COMMENT BOX
-// ============================================
-function isMessageInput(input) {
-    const rect = input.getBoundingClientRect();
-    if (rect.width < 50 || rect.height < 20) return false;
-
-    const ariaLabel = (input.getAttribute('aria-label') || '').toLowerCase();
-    const placeholder = (input.getAttribute('placeholder') || '').toLowerCase();
-    const type = (input.getAttribute('type') || '').toLowerCase();
-
-    // Only skip obvious non-message inputs
-    if (type === 'search' || type === 'password' || type === 'email' || type === 'number') return false;
-    if (ariaLabel === 'search' || placeholder === 'search') return false;
-    if (ariaLabel.includes('search facebook') || ariaLabel.includes('search instagram')) return false;
-    if (ariaLabel.includes('search youtube') || ariaLabel.includes('search discord')) return false;
-    if (ariaLabel.includes('search linkedin') || ariaLabel.includes('search twitter')) return false;
-
-    return true;
-}
-
-// ============================================
 // ATTACH TO INPUT
 // ============================================
 function attachToInput(input) {
     if (input.dataset.toneEaseAttached) return;
-    if (!isMessageInput(input)) return;
+
+    // Skip tiny inputs (like search bars, hidden inputs)
+    const rect = input.getBoundingClientRect();
+    if (rect.width < 50 || rect.height < 20) return;
 
     input.dataset.toneEaseAttached = "true";
 
