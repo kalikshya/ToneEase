@@ -14,43 +14,14 @@
     "clipboardWrite"
   ],
   "host_permissions": [
-    "http://127.0.0.1:8000/*",
-    "http://localhost/*",
-    "https://kalikshya-toneease-backend.hf.space/*",
-    "https://web.whatsapp.com/*",
-    "https://www.facebook.com/*",
-    "https://www.messenger.com/*",
-    "https://www.instagram.com/*",
-    "https://mail.google.com/*",
-    "https://twitter.com/*",
-    "https://x.com/*",
-    "https://www.linkedin.com/*",
-    "https://discord.com/*",
-    "https://slack.com/*",
-    "https://www.reddit.com/*",
-    "https://www.youtube.com/*"
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "http://localhost/*",
-        "http://127.0.0.1:5500/*",
-        "https://web.whatsapp.com/*",
-        "https://www.facebook.com/*",
-        "https://www.messenger.com/*",
-        "https://www.instagram.com/*",
-        "https://mail.google.com/*",
-        "https://twitter.com/*",
-        "https://x.com/*",
-        "https://www.linkedin.com/*",
-        "https://discord.com/*",
-        "https://slack.com/*",
-        "https://www.reddit.com/*",
-        "https://www.youtube.com/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["content.js"],
       "run_at": "document_idle"
     }

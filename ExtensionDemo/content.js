@@ -1,66 +1,19 @@
-// ToneEase Content Script
+// ToneEase Content Script — Universal Platform Support
 const API_URL = "https://kalikshya-toneease-backend.hf.space";
 
 let isAccepting = false;
 
 // ============================================
-// PLATFORM SELECTORS
+// UNIVERSAL SELECTORS — works on ANY website
 // ============================================
-const PLATFORM_SELECTORS = {
-    test: [
-        '#toneease-test-input',
-        'textarea'
-    ],
-    whatsapp: [
-        'div[contenteditable="true"][data-tab="10"]',
-        'div[contenteditable="true"][data-tab="1"]',
-        'footer div[contenteditable="true"]'
-    ],
-    facebook: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div[aria-label="Message"][contenteditable="true"]',
-        'div[aria-placeholder="Aa"][contenteditable="true"]'
-    ],
-    instagram: [
-        'div[contenteditable="true"][role="textbox"]',
-        'textarea[placeholder="Message..."]',
-        'div[aria-label="Message"][contenteditable="true"]'
-    ],
-    gmail: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div[aria-label="Message Body"][contenteditable="true"]',
-        'div.Am.Al.editable[contenteditable="true"]'
-    ],
-    twitter: [
-        'div[contenteditable="true"][data-testid="tweetTextarea_0"]',
-        'div[contenteditable="true"][role="textbox"]'
-    ],
-    linkedin: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div.msg-form__contenteditable[contenteditable="true"]',
-        'div.ql-editor[contenteditable="true"]'
-    ],
-    discord: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div[data-slate-editor="true"]'
-    ],
-    slack: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div.ql-editor[contenteditable="true"]'
-    ],
-    reddit: [
-        'div[contenteditable="true"]',
-        'textarea[placeholder="What are your thoughts?"]',
-        'div[data-testid="comment-submission-form-richtext"] div[contenteditable="true"]'
-    ],
-    youtube: [
-        'div#contenteditable-root[contenteditable="true"]',
-        'yt-formatted-string[contenteditable="true"]'
-    ]
-};
+const UNIVERSAL_SELECTORS = [
+    'div[contenteditable="true"]',
+    'textarea',
+    'input[type="text"]'
+];
 
 // ============================================
-// DETECT PLATFORM
+// DETECT PLATFORM (for logging only)
 // ============================================
 function detectPlatform() {
     const url = window.location.href;
@@ -75,7 +28,7 @@ function detectPlatform() {
     if (url.includes("slack.com")) return "slack";
     if (url.includes("reddit.com")) return "reddit";
     if (url.includes("youtube.com")) return "youtube";
-    return null;
+    return "other";
 }
 
 // ============================================
@@ -89,7 +42,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT
+// SET TEXT IN INPUT — universal method
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -103,13 +56,28 @@ async function setTextInInput(input, text) {
             input.focus();
             setTimeout(async () => {
                 try {
-                    await navigator.clipboard.writeText(text);
-                    await new Promise(r => setTimeout(r, 50));
-                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                    await new Promise(r => setTimeout(r, 50));
-                    document.execCommand('paste');
+                    // Method 1: Select all and insertText (works on most platforms)
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(input);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    document.execCommand('delete');
+                    document.execCommand('insertText', false, text);
                 } catch (err) {
-                    console.error("Failed:", err);
+                    try {
+                        // Method 2: Clipboard paste fallback
+                        await navigator.clipboard.writeText(text);
+                        await new Promise(r => setTimeout(r, 50));
+                        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
+                        await new Promise(r => setTimeout(r, 50));
+                        document.execCommand('paste');
+                    } catch (e) {
+                        // Method 3: Direct content replacement
+                        input.innerHTML = '';
+                        input.textContent = text;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
             }, 100);
@@ -297,7 +265,6 @@ function createManualIcon(input) {
     positionIcon();
     document.body.appendChild(icon);
 
-    // Hide icon if ToneEase is disabled
     chrome.storage.local.get(["toneease_enabled"], (data) => {
         if (data.toneease_enabled === false) {
             icon.style.display = "none";
@@ -633,6 +600,11 @@ async function doAnalyze(text, input, userId, sessionId) {
 // ============================================
 function attachToInput(input) {
     if (input.dataset.toneEaseAttached) return;
+
+    // Skip tiny inputs (like search bars, hidden inputs)
+    const rect = input.getBoundingClientRect();
+    if (rect.width < 50 || rect.height < 20) return;
+
     input.dataset.toneEaseAttached = "true";
 
     createManualIcon(input);
@@ -656,15 +628,10 @@ function attachToInput(input) {
 }
 
 // ============================================
-// FIND AND ATTACH TO ALL INPUTS
+// FIND AND ATTACH TO ALL INPUTS (universal)
 // ============================================
 function findAndAttachInputs() {
-    const platform = detectPlatform();
-    if (!platform) return;
-
-    const selectors = PLATFORM_SELECTORS[platform];
-    if (!selectors) return;
-    selectors.forEach(selector => {
+    UNIVERSAL_SELECTORS.forEach(selector => {
         document.querySelectorAll(selector).forEach(input => attachToInput(input));
     });
 }
