@@ -46,9 +46,9 @@ const PLATFORM_SELECTORS = {
     ],
 
     telegram: [
-    'div[contenteditable="true"].input-message-input',
-    'div[contenteditable="true"][data-peer-id]',
-    'div.input-message-input[contenteditable="true"]'
+    'div#editable-message-text[contenteditable="true"]',
+    'div.form-control[contenteditable="true"]',
+    'div[contenteditable="true"].allow-selection'
     ],
 
     reddit: [
