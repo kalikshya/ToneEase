@@ -44,10 +44,13 @@ const PLATFORM_SELECTORS = {
         'div[contenteditable="true"][role="textbox"]',
         'div[data-slate-editor="true"]'
     ],
-    slack: [
-        'div[contenteditable="true"][role="textbox"]',
-        'div.ql-editor[contenteditable="true"]'
+
+    telegram: [
+    'div[contenteditable="true"].input-message-input',
+    'div[contenteditable="true"][data-peer-id]',
+    'div.input-message-input[contenteditable="true"]'
     ],
+
     reddit: [
         'div[contenteditable="true"]',
         'div.cursor-text[class*="overflow-y-auto"]',
@@ -73,7 +76,7 @@ function detectPlatform() {
     if (url.includes("twitter.com") || url.includes("x.com")) return "twitter";
     if (url.includes("linkedin.com")) return "linkedin";
     if (url.includes("discord.com")) return "discord";
-    if (url.includes("slack.com")) return "slack";
+    if (url.includes("web.telegram.org")) return "telegram";
     if (url.includes("reddit.com")) return "reddit";
     if (url.includes("youtube.com")) return "youtube";
     return null;
@@ -106,7 +109,7 @@ async function setTextInInput(input, text) {
                 const platform = detectPlatform();
 
                 try {
-                    if (platform === 'gmail' || platform === 'discord' || platform === 'youtube' || platform === 'linkedin' || platform === 'twitter' || platform === 'slack' || platform === 'reddit') {
+                    if (platform === 'gmail' || platform === 'discord' || platform === 'youtube' || platform === 'linkedin' || platform === 'twitter' || platform === 'telegram' || platform === 'reddit') {
                         // Direct replacement for platforms where clipboard method fails
                         input.textContent = '';
                         input.dispatchEvent(new Event('input', { bubbles: true }));
