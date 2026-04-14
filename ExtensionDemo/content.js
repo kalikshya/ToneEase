@@ -89,7 +89,7 @@ function getTextFromInput(input) {
 }
 
 // ============================================
-// SET TEXT IN INPUT
+// SET TEXT IN INPUT — platform-specific methods
 // ============================================
 async function setTextInInput(input, text) {
     isAccepting = true;
@@ -102,14 +102,35 @@ async function setTextInInput(input, text) {
         } else {
             input.focus();
             setTimeout(async () => {
+                const platform = detectPlatform();
+
                 try {
-                    await navigator.clipboard.writeText(text);
-                    await new Promise(r => setTimeout(r, 50));
-                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
-                    await new Promise(r => setTimeout(r, 50));
-                    document.execCommand('paste');
+                    if (platform === 'gmail' || platform === 'discord' || platform === 'youtube' || platform === 'linkedin' || platform === 'twitter' || platform === 'slack' || platform === 'reddit') {
+                        // Direct replacement for platforms where clipboard method fails
+                        input.textContent = '';
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        await new Promise(r => setTimeout(r, 100));
+                        input.focus();
+                        document.execCommand('insertText', false, text);
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    } else {
+                        // Clipboard method for WhatsApp, Facebook, Instagram
+                        await navigator.clipboard.writeText(text);
+                        await new Promise(r => setTimeout(r, 50));
+                        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true }));
+                        await new Promise(r => setTimeout(r, 50));
+                        document.execCommand('selectAll');
+                        await new Promise(r => setTimeout(r, 50));
+                        document.execCommand('paste');
+                    }
                 } catch (err) {
-                    console.error("Failed:", err);
+                    console.error("ToneEase primary method failed:", err);
+                    try {
+                        input.textContent = text;
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    } catch (e) {
+                        console.error("ToneEase fallback failed:", e);
+                    }
                 }
                 setTimeout(() => { isAccepting = false; }, 2000);
             }, 100);
@@ -221,7 +242,7 @@ function createSuggestionBox(suggestion, input) {
     box.innerHTML = `
         <div style="display:flex; align-items:center; margin-bottom:8px;">
             <span style="color:#4B2E2B; font-weight:600; font-size:12px;">ToneEase Suggestion</span>
-            <button id="toneease-close" style="margin-left:auto; background:none; border:none; cursor:pointer; color:#8C5A3C; font-size:18px; line-height:1;">x</button>
+            <button id="toneease-close" style="margin-left:auto; background:none; border:none; cursor:pointer; color:#8C5A3C; font-size:18px; line-height:1;">X</button>
         </div>
         <div style="color:#8C5A3C; font-size:12px; margin-bottom:10px; line-height:1.5;">
             <strong style="color:#4B2E2B;">Rewritten:</strong> ${suggestion}
