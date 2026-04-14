@@ -50,6 +50,7 @@ const PLATFORM_SELECTORS = {
     ],
     reddit: [
         'div[contenteditable="true"]',
+        'div.cursor-text[class*="overflow-y-auto"]',
         'textarea[placeholder="What are your thoughts?"]',
         'div[data-testid="comment-submission-form-richtext"] div[contenteditable="true"]'
     ],
