@@ -118,6 +118,7 @@ function loadUserInfo() {
                     chrome.storage.local.set({
                         user_id: null, username: null, email: null, is_logged_in: false
                     }, () => {
+                        alert("Signed out successfully!")
                         loadUserInfo();
                         loadStatsOnStart();
                     });
