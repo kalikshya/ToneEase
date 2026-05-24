@@ -46,6 +46,7 @@ const PLATFORM_SELECTORS = {
     ],
 
     telegram: [
+    'div.input-message-input[contenteditable="true"]',
     'div#editable-message-text[contenteditable="true"]',
     'div.form-control[contenteditable="true"]',
     'div[contenteditable="true"].allow-selection'
